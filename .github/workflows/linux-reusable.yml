@@ -76,8 +76,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::353328028284:role/github-actions-runner
-          role-session-name: github-actions-runner-session
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.aws-region }}
       - name: Start EC2 runner
         id: start-ec2-runner
@@ -162,8 +162,8 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          role-to-assume: arn:aws:iam::353328028284:role/github-actions-runner
-          role-session-name: github-actions-runner-session
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.aws-region }}
       - name: Stop EC2 runner
         uses: tundranerd/ec2-multiple-github-runners@multi-os-multi-runner
