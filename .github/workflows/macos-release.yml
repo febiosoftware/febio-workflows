@@ -5,13 +5,6 @@ on:
         required: false
         default: bash
         type: string
-      package-name:
-        required: true
-        type: string
-      aws-region:
-        default: us-east-1
-        required: false
-        type: string
       os:
         default: macOS
         required: false
