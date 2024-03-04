@@ -50,7 +50,7 @@ jobs:
           shell: ${{ inputs.shell }}
           script: ci/${{inputs.os}}/release.sh
           os: ${{inputs.os}}
-          ib_license_file: /Users/gitRunner/githubActions/license.xml
+          ib_license_file: /Users/gitRunner/license.xml
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
           uploadDir: /Users/gitRunner/githubActions/upload
   # tests:

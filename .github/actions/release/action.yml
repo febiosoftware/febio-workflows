@@ -32,7 +32,7 @@ runs:
     - name: Write License File
       shell: bash
       run: |
-        echo $IB_LICENSE_CONTENTS >> $IB_LICENSE_FILE
+        echo $IB_LICENSE_CONTENTS > $IB_LICENSE_FILE
       env:
         IB_LICENSE_FILE: ${{inputs.ib_license_file}}
         IB_LICENSE_CONTENTS: ${{inputs.ib_license_contents}}
