@@ -1,6 +1,12 @@
 on:
   workflow_call:
     inputs:
+      febioVer:
+        required: true
+        type: string
+      fbsVer:
+        required: true
+        type: string
       shell:
         required: false
         default: bash
