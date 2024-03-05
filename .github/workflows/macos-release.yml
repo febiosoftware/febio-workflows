@@ -52,7 +52,8 @@ jobs:
           os: ${{inputs.os}}
           ib_license_file: /Users/gitRunner/license.xml
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-          uploadDir: /Users/gitRunner/githubActions/upload
+          uploadDir: /Users/gitRunner/githubActions/uploads
+          osxKeyPswd: ${{ secrets.MACOS_PKCS12_PSWD }}
   # tests:
   #   if: inputs.runTests
   #   name: Run test suite
