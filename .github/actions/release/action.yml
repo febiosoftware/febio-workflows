@@ -16,13 +16,7 @@ inputs:
   os:
     required: true
     type: string
-  ib_license_file:
-    required: true
-    type: string
   ib_license_contents:
-    required: true
-    type: string
-  uploadDir:
     required: true
     type: string
   osxKeyPswd:
@@ -35,9 +29,8 @@ runs:
     - name: Write License File
       shell: bash
       run: |
-        echo $IB_LICENSE_CONTENTS > $IB_LICENSE_FILE
+        echo $IB_LICENSE_CONTENTS > license.xml
       env:
-        IB_LICENSE_FILE: ${{inputs.ib_license_file}}
         IB_LICENSE_CONTENTS: ${{inputs.ib_license_contents}}
     - name: Release Script
       shell: ${{inputs.shell}}
@@ -52,19 +45,22 @@ runs:
       with:
         name: ${{inputs.os}}-Release-Artifacts
         path: |
-          ${{inputs.uploadDir}}/bin
-          ${{inputs.uploadDir}}/lib
-          ${{inputs.uploadDir}}/sdk.zip
+          ${{github.workspace}}/upload/bin
+          ${{github.workspace}}/upload/lib
+          ${{github.workspace}}/upload/doc
+          ${{github.workspace}}/upload/MacOS
+          ${{github.workspace}}/upload/Frameworks
+          ${{github.workspace}}/upload/sdk.zip
     - name: Upload Updater
       uses: actions/upload-artifact@v4
       with:
         name: ${{inputs.os}}-Updater-Artifacts
         path: |
-          ${{inputs.uploadDir}}/updater/*
+          ${{github.workspace}}/upload/updater/*
     - name: Upload Installer
       uses: actions/upload-artifact@v4
       with:
         name: FEBioStudio_${{inputs.fbsVer}}_FEBio_${{inputs.febioVer}}_${{inputs.os}}_installer
         path: |
-          ${{inputs.uploadDir}}/installer/*
+          ${{github.workspace}}/upload/installer/*
     

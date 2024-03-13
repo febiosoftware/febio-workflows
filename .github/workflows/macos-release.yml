@@ -26,33 +26,44 @@ on:
         default: false
 
 jobs:
-  build:
-    name: Clone and build
+  release:
+    name: Release
     runs-on: self-hosted
     outputs:
       git_describe: ${{ steps.git-describe.outputs.git_describe }}
     steps:
-      - name: Checkout
+      - name: Checkout FBS
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
-      - id: git-describe
-        name: Git Describe
-        uses: febiosoftware/febio-workflows/.github/actions/git-describe@develop
+          path: FEBioStudio
+          ref: ci/develop
+      - name: Checkout FEBio
+        uses: actions/checkout@v4
         with:
-          shell: ${{ inputs.shell }}
+          path: FEBio
+          repository: febiosoftware/FEBio
+          ref: ci/develop
+      - name: Checkout FEBioChem
+        uses: actions/checkout@v4
+        with:
+          path: FEBioChem
+          repository: febiosoftware/FEBioChem
+          ref: ci/develop
+      - name: Checkout FEBioHeat
+        uses: actions/checkout@v4
+        with:
+          path: FEBioHeat
+          repository: febiosoftware/FEBioHeat
+          ref: ci/develop
       - name: Release
         uses: febiosoftware/febio-workflows/.github/actions/release@develop
         with:
           febioVer: ${{ inputs.febioVer }}
           fbsVer: ${{ inputs.fbsVer }}
           shell: ${{ inputs.shell }}
-          script: ci/${{inputs.os}}/release.sh
+          script: FEBioStudio/ci/${{inputs.os}}/release.sh
           os: ${{inputs.os}}
-          ib_license_file: /Users/gitRunner/license.xml
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-          uploadDir: /Users/gitRunner/githubActions/uploads
           osxKeyPswd: ${{ secrets.MACOS_PKCS12_PSWD }}
   # tests:
   #   if: inputs.runTests
@@ -73,51 +84,23 @@ jobs:
   #         package-name: ${{ inputs.package-name }}
   #         os: ${{inputs.os}}
   #         arch: ${{inputs.arch}}
-  # repo-artifacts:
-  #   name: Upload artifacts to repo
-  #   needs:
-  #     - build # required to get output from the start-runner job
-  #   runs-on: ubuntu-latest
-  #   if: >
-  #     success() &&
-  #     ! github.event.pull_request.head.repo.fork
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         submodules: 'true'
-  #     - name: Repo Artifacts
-  #       uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
-  #       with:
-  #         ssh-user: ${{ secrets.SSH_USER }}
-  #         ssh-key: ${{ secrets.SSH_KEY }}
-  #         ssh-host: ${{ secrets.SSH_HOST }}
-  #         shell: ${{ inputs.shell }}
-  #         package-name: ${{ inputs.package-name }}
-  #         os: ${{inputs.os}}
-  #         arch: ${{inputs.arch}}
-  # publish-to-s3:
-  #   name: Publish to S3
-  #   needs:
-  #     - build
-  #   runs-on: ubuntu-latest
-  #   if: >
-  #     success() &&
-  #     ! github.event.pull_request.head.repo.fork
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         submodules: 'true'
-  #     - name: Publish To S3
-  #       uses: febiosoftware/febio-workflows/.github/actions/publish-to-s3@develop
-  #       with:
-  #         aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-  #         aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-  #         shell: ${{ inputs.shell }}
-  #         package-name: ${{ inputs.package-name }}
-  #         package-sdk: ${{ inputs.package-sdk }}
-  #         os: ${{inputs.os}}
-  #         arch: ${{inputs.arch}}
-  #         git-tag: ${{ needs.build.outputs.git_describe }}
-  #         aws-region: ${{ inputs.aws-region }}
+  repo-artifacts:
+    name: Upload artifacts to repo
+    needs:
+      - release # required to get output from the start-runner job
+    runs-on: ubuntu-latest
+    if: ${{ success() }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'
+      - name: Repo Artifacts
+        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts-release@develop
+        with:
+          ssh-user: ${{ secrets.SSH_USER }}
+          ssh-key: ${{ secrets.SSH_KEY }}
+          ssh-host: ${{ secrets.SSH_HOST }}
+          os: ${{inputs.os}}
+          febioVer: ${{ inputs.febioVer }}
+          fbsVer: ${{ inputs.fbsVer }}

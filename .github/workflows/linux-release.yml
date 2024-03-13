@@ -95,27 +95,38 @@ jobs:
     outputs:
       git_describe: ${{ steps.git-describe.outputs.git_describe }}
     steps:
-      - name: Checkout
+      - name: Checkout FBS
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
-      - id: git-describe
-        name: Git Describe
-        uses: febiosoftware/febio-workflows/.github/actions/git-describe@develop
+          path: FEBioStudio
+          ref: ci/develop
+      - name: Checkout FEBio
+        uses: actions/checkout@v4
         with:
-          shell: ${{ inputs.shell }}
+          path: FEBio
+          repository: febiosoftware/FEBio
+          ref: ci/develop
+      - name: Checkout FEBioChem
+        uses: actions/checkout@v4
+        with:
+          path: FEBioChem
+          repository: febiosoftware/FEBioChem
+          ref: ci/develop
+      - name: Checkout FEBioHeat
+        uses: actions/checkout@v4
+        with:
+          path: FEBioHeat
+          repository: febiosoftware/FEBioHeat
+          ref: ci/develop
       - name: Release
         uses: febiosoftware/febio-workflows/.github/actions/release@develop
         with:
           febioVer: ${{ inputs.febioVer }}
           fbsVer: ${{ inputs.fbsVer }}
           shell: ${{ inputs.shell }}
-          script: ci/${{inputs.os}}/release.sh
+          script: FEBioStudio/ci/${{inputs.os}}/release.sh
           os: ${{inputs.os}}
-          ib_license_file: /home/ubuntu/license.xml
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-          uploadDir: /home/ubuntu/upload
   # tests:
   #   if: inputs.runTests
   #   name: Run test suite

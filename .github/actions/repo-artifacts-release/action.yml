@@ -43,4 +43,4 @@ runs:
     - name: Make Release
       shell: bash
       run: |
-        ssh repo "python3 modelRepo/makeRelease.py ${{inputs.os}} ${{inputs.febioVer}} ${{inputs.fbsVer}}"
+        ssh repo "python3 /home/febio-github/modelServer/makeRelease.py ${{inputs.os}} ${{inputs.febioVer}} ${{inputs.fbsVer}}"
