@@ -81,7 +81,7 @@ jobs:
           aws-region: ${{ inputs.aws-region }}
       - name: Start EC2 runner
         id: start-ec2-runner
-        uses: tundranerd/ec2-multiple-github-runners@multi-os-multi-runner
+        uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
         with:
           mode: start
           key-pair: ${{ inputs.key-pair }}
@@ -166,7 +166,7 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ inputs.aws-region }}
       - name: Stop EC2 runner
-        uses: tundranerd/ec2-multiple-github-runners@multi-os-multi-runner
+        uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
         with:
           mode: stop
           os: ${{ inputs.os }}
