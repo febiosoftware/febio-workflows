@@ -19,12 +19,8 @@ on:
       sdk-config:
         required: false
         type: string
-      aws-region:
-        default: us-east-1
-        required: false
-        type: string
       os:
-        default: Linux
+        default: Windows
         required: false
         type: string
       arch:
@@ -46,11 +42,23 @@ on:
         type: string
       aws-ami-id:
         required: false
-        default: ami-0b0e38d12eb5ff011
+        default: ami-04bb42ae8c0b24120
         type: string
       aws-instance-type:
         required: false
         default: c5a.8xlarge
+        type: string
+      aws-region:
+        default: us-east-1
+        required: false
+        type: string
+      aws-role-to-assume:
+        required: false
+        default: arn:aws:iam::353328028284:role/github-actions-runner
+        type: string
+      aws-role-session-name:
+        required: false
+        default: febio-github-actions-runner-session
         type: string
       aws-availability-zone:
         required: false
@@ -60,10 +68,6 @@ on:
         required: false
         default: win
         type: string
-
-permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read  # This is required for actions/checkout
 
 jobs:
   start-runner:
@@ -76,9 +80,15 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
+      - id: gh-token # Fetch github-token from aws-ssm
+        name: Git Describe
+        uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
+        with:
+          shell: ${{ inputs.shell }}
+
       - name: Start EC2 runner
         id: start-ec2-runner
         uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
@@ -86,13 +96,13 @@ jobs:
           mode: start
           key-pair: ${{ inputs.key-pair }}
           os: ${{ inputs.os }}
-          github-token: ${{ secrets.GH_TOKEN}}
+          github-token: ${{ steps.gh-token.outputs.token}}
           ec2-image-id: ${{ inputs.aws-ami-id}}
           ec2-instance-type: ${{ inputs.aws-instance-type }}
           subnet-id: ${{ inputs.aws-subnet-id }}
           security-group-id: ${{ inputs.aws-sg-id }}
           availability-zone: ${{ inputs.aws-availability-zone }}
-          wait-for-registry-timeout: 5
+          wait-for-registry-timeout: 10
           aws-resource-tags: > # optional, requires additional permissions
             [
               {"Key": "Name", "Value": "ec2-github-runner"},
@@ -120,17 +130,14 @@ jobs:
       - name: Build
         uses: febiosoftware/febio-workflows/.github/actions/build@develop
         with:
-          shell: ${{ inputs.shell }}
+          shell: cmd
           package-name: ${{ inputs.package-name }}
           requires-sdk: ${{ inputs.requires-sdk }}
           sdk-config: ${{ inputs.sdk-config }}
           package-sdk: ${{ inputs.package-sdk }}
-          script: ci/${{inputs.os}}/build.sh
+          script: ci/${{inputs.os}}/build.bat
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ inputs.aws-region }}
   tests:
     if: inputs.runTests
     name: Run test suite
@@ -142,12 +149,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: 'true'
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
-          script: ci/${{inputs.os}}/test.sh
-          shell: ${{ inputs.shell }}
+          script: ci/${{inputs.os}}/test.bat
+          shell: cmd
           package-name: ${{ inputs.package-name }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
@@ -162,16 +170,21 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
+      - id: gh-token # Fetch github-token from aws-ssm
+        name: Git Describe
+        uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
+        with:
+          shell: ${{ inputs.shell }}
       - name: Stop EC2 runner
         uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
         with:
           mode: stop
           os: ${{ inputs.os }}
           wait-for-deregistry-timeout: 5
-          github-token: ${{ secrets.GH_TOKEN}}
+          github-token: ${{ steps.gh-token.outputs.token}}
           label: ${{ needs.start-runner.outputs.label }}
           ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
   repo-artifacts:
@@ -186,6 +199,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: 'true'
       - name: Repo Artifacts
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
@@ -209,7 +223,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           submodules: 'true'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Publish To S3
         uses: febiosoftware/febio-workflows/.github/actions/publish-to-s3@develop
         with:

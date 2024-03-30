@@ -25,14 +25,48 @@ runs:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
+    - name: Get FEBioChem
+      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+      with:
+        os: ${{inputs.os}}
+        arch: ${{inputs.arch}}
+        sdk-config: |
+          {
+            "package_name": "febiochem",
+            "package": "febiochem",
+            "sdk_path": "ci/develop",
+            "version": "v1.0",
+          }
+    - name: Get FEBioHeat
+      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+      with:
+        os: ${{inputs.os}}
+        arch: ${{inputs.arch}}
+        sdk-config: |
+          {
+            "package_name": "febioheat",
+            "package": "febioheat",
+            "sdk_path": "ci/develop",
+            "version": "v1.0",
+          }
+    - name: Checkout
+      uses: actions/checkout@v4
+      with:
+        ref: 'overhaul'
+        path: ./TestSuite
+        repository: febiosoftware/TestSuite
+        fetch-depth: 0
+        submodules: 'true'
+
     - name: Run test suite
       shell: ${{inputs.shell}}
       run: |
         ${{ inputs.script }}
     - name: Upload Artifacts
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: testsuite-${{inputs.os}}-${{inputs.arch}}-logs
         path: |
-          TestSuite/Verify4/*.log
-          TestSuite/Logs*.txt
+          TestSuite/Verify/*.log
+          TestSuite/Logs/*.txt
