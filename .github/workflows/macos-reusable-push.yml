@@ -100,7 +100,8 @@ jobs:
   repo-artifacts:
     name: Upload artifacts to repo
     needs:
-      - build # required to get output from the start-runner job
+      - build
+      - tests
     runs-on: ubuntu-latest
     if: >
       success() &&
@@ -125,6 +126,7 @@ jobs:
     name: Publish to S3
     needs:
       - build
+      - tests
     runs-on: ubuntu-latest
     if: >
       success() &&
