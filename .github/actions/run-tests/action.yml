@@ -55,7 +55,7 @@ runs:
         ref: 'overhaul'
         path: ./TestSuite
         repository: febiosoftware/TestSuite
-        fetch-depth: 0
+        fetch-depth: 1
         submodules: 'true'
 
     - name: Run test suite

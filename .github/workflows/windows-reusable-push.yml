@@ -121,12 +121,18 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: 'true'
+          submodules: true
       - id: git-describe
         name: Git Describe
         uses: febiosoftware/febio-workflows/.github/actions/git-describe@develop
         with:
           shell: ${{ inputs.shell }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Build
         uses: febiosoftware/febio-workflows/.github/actions/build@develop
         with:
@@ -149,13 +155,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
+          fetch-depth: 1
+          submodules: true
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
-          script: ci/${{inputs.os}}/test.bat
-          shell: cmd
+          script: ci/${{inputs.os}}/test.sh
+          shell: ${{ inputs.shell }}
           package-name: ${{ inputs.package-name }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
@@ -191,16 +203,19 @@ jobs:
     name: Upload artifacts to repo
     needs:
       - build # required to get output from the start-runner job
+      - tests
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
+          fetch-depth: 1
+          submodules: true
       - name: Repo Artifacts
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
@@ -215,16 +230,19 @@ jobs:
     name: Publish to S3
     needs:
       - build
+      - tests
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
+          fetch-depth: 1
+          submodules: true
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
