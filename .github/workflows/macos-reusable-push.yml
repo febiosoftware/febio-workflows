@@ -110,7 +110,8 @@ jobs:
       - tests
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      needs.*.result != 'failure' &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
@@ -135,7 +136,8 @@ jobs:
       - tests
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      needs.*.result != 'failure' &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
