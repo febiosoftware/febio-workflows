@@ -151,6 +151,12 @@ jobs:
         with:
           fetch-depth: 1
           submodules: true
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
@@ -191,6 +197,7 @@ jobs:
     name: Upload artifacts to repo
     needs:
       - build # required to get output from the start-runner job
+      - tests
     runs-on: ubuntu-latest
     if: >
       always() &&
@@ -217,6 +224,7 @@ jobs:
     name: Publish to S3
     needs:
       - build
+      - tests
     runs-on: ubuntu-latest
     if: >
       always() &&
