@@ -114,6 +114,10 @@ jobs:
       needs.*.result != 'failure' &&
       ! github.event.pull_request.head.repo.fork
     steps:
+      - name: Debug
+        run: |
+          echo "Build Results: ${{ needs.build.result}}"
+          echo "Test Results: ${{ needs.tests.result}}"
       - name: Checkout
         uses: actions/checkout@v4
         with:
