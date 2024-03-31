@@ -161,7 +161,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: 'true'
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -216,13 +216,15 @@ jobs:
       - tests
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: 'true'
       - name: Repo Artifacts
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
@@ -238,15 +240,18 @@ jobs:
     name: Publish to S3
     needs:
       - build
+      - tests
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
+          fetch-depth: 1
           submodules: 'true'
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4

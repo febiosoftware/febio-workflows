@@ -121,7 +121,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          submodules: 'true'
+          submodules: true
       - id: git-describe
         name: Git Describe
         uses: febiosoftware/febio-workflows/.github/actions/git-describe@develop
@@ -149,13 +149,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
+          fetch-depth: 1
+          submodules: true
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
-          script: ci/${{inputs.os}}/test.bat
-          shell: cmd
+          script: ci/${{inputs.os}}/test.sh
+          shell: ${{ inputs.shell }}
           package-name: ${{ inputs.package-name }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
@@ -193,14 +193,16 @@ jobs:
       - build # required to get output from the start-runner job
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
+          fetch-depth: 1
+          submodules: true
       - name: Repo Artifacts
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
@@ -217,14 +219,16 @@ jobs:
       - build
     runs-on: ubuntu-latest
     if: >
-      success() &&
+      always() &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
       ! github.event.pull_request.head.repo.fork
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          fetch-depth: 0
-          submodules: 'true'
+          fetch-depth: 1
+          submodules: true
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
