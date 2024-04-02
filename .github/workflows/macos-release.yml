@@ -64,7 +64,10 @@ jobs:
           script: FEBioStudio/ci/${{inputs.os}}/release.sh
           os: ${{inputs.os}}
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-        secrets: inherit
+          macos_pkcs12_pswd: ${{ secrets.MACOS_PKCS12_PSWD }}
+          macos_sign_id: ${{ secrets.MACOS_SIGN_ID }}
+          macos_sign_pwd: ${{ secrets.MACOS_SIGN_PWD }}
+          macos_sign_team: ${{ secrets.MACOS_SIGN_TEAM }}
   repo-artifacts:
     name: Upload artifacts to repo
     needs:
