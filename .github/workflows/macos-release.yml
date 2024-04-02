@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: FEBioStudio
-          ref: ci/develop
+          ref: ci/releaseWorkflow
       - name: Checkout FEBio
         uses: actions/checkout@v4
         with:
@@ -64,7 +64,7 @@ jobs:
           script: FEBioStudio/ci/${{inputs.os}}/release.sh
           os: ${{inputs.os}}
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-          osxKeyPswd: ${{ secrets.MACOS_PKCS12_PSWD }}
+        secrets: inherit
   # tests:
   #   if: inputs.runTests
   #   name: Run test suite
