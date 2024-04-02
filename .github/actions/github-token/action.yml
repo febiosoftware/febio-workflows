@@ -1,0 +1,24 @@
+name: 'Github Token'
+description: 'Use AWS SSM to fetch GH_TOKEN'
+inputs:
+  shell:
+    required: false
+    default: bash
+    type: string
+  token-path:
+    required: false
+    default: /github/runners/github-token
+
+outputs:
+  token:
+    value: ${{ steps.gh-token.outputs.token }}
+
+runs:
+  using: "composite"
+  steps:
+    - id: gh-token
+      shell: ${{inputs.shell}}
+      run: |
+          GH_TOKEN=$(aws ssm get-parameter --name ${{inputs.token-path}} --with-decryption | jq --raw-output .Parameter.Value)
+          echo "::add-mask::$GH_TOKEN"
+          echo "token=$GH_TOKEN"  >> "$GITHUB_OUTPUT"

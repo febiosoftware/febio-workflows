@@ -20,15 +20,6 @@ inputs:
   git-tag:
     required: true
     type: string
-  aws-access-key-id:
-    required: true
-    type: string
-  aws-secret-access-key:
-    required: true
-    type: string
-  aws-region:
-    required: true
-    type: string
 
 runs:
   using: "composite"
@@ -46,12 +37,6 @@ runs:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           artifacts/${{inputs.package-name}}
-    - name: Configure AWS credentials
-      uses: aws-actions/configure-aws-credentials@v4
-      with:
-        aws-access-key-id: ${{ inputs.aws-access-key-id }}
-        aws-secret-access-key: ${{ inputs.aws-secret-access-key }}
-        aws-region: ${{ inputs.aws-region }}
     - name: Publish to S3
       shell: ${{inputs.shell}}
       env:

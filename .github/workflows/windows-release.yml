@@ -48,6 +48,14 @@ on:
         required: false
         default: us-east-1b
         type: string
+      aws-role-to-assume:
+        required: false
+        default: arn:aws:iam::353328028284:role/github-actions-runner
+        type: string
+      aws-role-session-name:
+        required: false
+        default: febio-github-actions-runner-session
+        type: string
       key-pair:
         required: false
         default: win
@@ -64,17 +72,22 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
+      - id: gh-token # Fetch github-token from aws-ssm
+        name: Git Describe
+        uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
+        with:
+          shell: ${{ inputs.shell }}
       - name: Start EC2 runner
         id: start-ec2-runner
-        uses: tundranerd/ec2-multiple-github-runners@multi-os-multi-runner
+        uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
         with:
           mode: start
           key-pair: ${{ inputs.key-pair }}
           os: ${{ inputs.os }}
-          github-token: ${{ secrets.GH_TOKEN}}
+          github-token: ${{ steps.gh-token.outputs.token}}
           ec2-image-id: ${{ inputs.aws-ami-id}}
           ec2-instance-type: ${{ inputs.aws-instance-type }}
           subnet-id: ${{ inputs.aws-subnet-id }}
@@ -127,26 +140,6 @@ jobs:
           script: FEBioStudio/ci/${{inputs.os}}/release.ps1
           os: ${{inputs.os}}
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-  # tests:
-  #   if: inputs.runTests
-  #   name: Run test suite
-  #   needs:
-  #     - build
-  #     - start-runner # required to get output from the start-runner job
-  #   runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
-  #   steps:
-  #     - name: Checkout
-  #       uses: actions/checkout@v4
-  #       with:
-  #         submodules: 'true'
-  #     - name: Tests
-  #       uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
-  #       with:
-  #         script: ci/${{inputs.os}}/test.sh
-  #         shell: ${{ inputs.shell }}
-  #         package-name: ${{ inputs.package-name }}
-  #         os: ${{inputs.os}}
-  #         arch: ${{inputs.arch}}
   stop-runner:
     name: Stop self-hosted EC2 runner
     needs:
@@ -158,16 +151,21 @@ jobs:
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
-          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
+      - id: gh-token # Fetch github-token from aws-ssm
+        name: Git Describe
+        uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
+        with:
+          shell: ${{ inputs.shell }}
       - name: Stop EC2 runner
-        uses: tundranerd/ec2-multiple-github-runners@multi-os-multi-runner
+        uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
         with:
           mode: stop
           os: ${{ inputs.os }}
           wait-for-deregistry-timeout: 5
-          github-token: ${{ secrets.GH_TOKEN}}
+          github-token: ${{ steps.gh-token.outputs.token}}
           label: ${{ needs.start-runner.outputs.label }}
           ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
   repo-artifacts:
