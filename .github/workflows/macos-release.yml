@@ -56,7 +56,7 @@ jobs:
           repository: febiosoftware/FEBioHeat
           ref: ci/develop
       - name: Release
-        uses: febiosoftware/febio-workflows/.github/actions/release@releaseWorkflow
+        uses: febiosoftware/febio-workflows/.github/actions/release@ci/releaseWorkflow
         with:
           febioVer: ${{ inputs.febioVer }}
           fbsVer: ${{ inputs.fbsVer }}
