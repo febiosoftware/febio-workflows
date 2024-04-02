@@ -19,10 +19,22 @@ inputs:
   ib_license_contents:
     required: true
     type: string
-  # osxKeyPswd:
-  #   required: false
-  #   type: string
-  #   default: 
+  macos_pkcs12_pswd:
+    required: false
+    type: string
+    default:
+  macos_sign_id:
+    required: false
+    type: string
+    default: 
+  macos_sign_pwd:
+    required: false
+    type: string
+    default: 
+  macos_sign_team:
+    required: false
+    type: string
+    default: 
 runs:
   using: "composite"
   steps:
@@ -39,10 +51,10 @@ runs:
       env:
         # FEBIO_VER: ${{inputs.febioVer}}
         # FBS_VER: ${{inputs.fbsVer}}
-        MACOS_PKCS12_PSWD: ${{ secrets.MACOS_PKCS12_PSWD }}
-        MACOS_SIGN_ID: ${{ secrets.MACOS_SIGN_ID }}
-        MACOS_SIGN_PWD: ${{ secrets.MACOS_SIGN_PWD }}
-        MACOS_SIGN_TEAM: ${{ secrets.MACOS_SIGN_TEAM }}
+        MACOS_PKCS12_PSWD: ${{ inputs.macos_pkcs12_pswd }}
+        MACOS_SIGN_ID: ${{ inputs.macos_sign_id }}
+        MACOS_SIGN_PWD: ${{ inputs.macos_sign_pwd }}
+        MACOS_SIGN_TEAM: ${{ inputs.macos_sign_team }}
     - name: Upload Binaries
       uses: actions/upload-artifact@v4
       with:
