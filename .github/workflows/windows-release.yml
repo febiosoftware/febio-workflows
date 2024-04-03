@@ -137,11 +137,13 @@ jobs:
         uses: febioSoftware/febio-workflows/.github/actions/git-describe@ci/releaseWorkflow
         id: describe_febio
         with:
+          shell: bash
           path: FEBio
       - name: Describe FBS
         uses: febioSoftware/febio-workflows/.github/actions/git-describe@ci/releaseWorkflow
         id: describe_fbs
         with:
+          shell: bash
           path: FEBioStudio
       - name: Release
         uses: febiosoftware/febio-workflows/.github/actions/release@ci/releaseWorkflow
