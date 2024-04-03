@@ -133,12 +133,12 @@ jobs:
           repository: febiosoftware/FEBioHeat
           ref: ci/develop
       - name: Describe FEBio
-        uses: febioSoftware/febio-workflows/.gihub/actions/git-describe@ci/releaseWorkflow
+        uses: febioSoftware/febio-workflows/.github/actions/git-describe@ci/releaseWorkflow
         id: describe_febio
         with:
           path: FEBio
       - name: Describe FBS
-        uses: febioSoftware/febio-workflows/.gihub/actions/git-describe@ci/releaseWorkflow
+        uses: febioSoftware/febio-workflows/.github/actions/git-describe@ci/releaseWorkflow
         id: describe_fbs
         with:
           path: FEBioStudio
