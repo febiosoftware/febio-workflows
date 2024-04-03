@@ -131,11 +131,21 @@ jobs:
           path: FEBioHeat
           repository: febiosoftware/FEBioHeat
           ref: ci/develop
+      - name: Describe FEBio
+        uses: febioSoftware/febio-workflows/.gihub/actions/git-describe@ci/releaseWorkflow
+        id: describe_febio
+        with:
+          path: FEBio
+      - name: Describe FBS
+        uses: febioSoftware/febio-workflows/.gihub/actions/git-describe@ci/releaseWorkflow
+        id: describe_fbs
+        with:
+          path: FEBioStudio
       - name: Release
         uses: febiosoftware/febio-workflows/.github/actions/release@develop
         with:
-          febioVer: ${{ inputs.febioVer }}
-          fbsVer: ${{ inputs.fbsVer }}
+          febioVer: ${{ steps.describe_febio.outputs.git_describe_stripped }}
+          fbsVer: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
           shell: powershell
           script: FEBioStudio/ci/${{inputs.os}}/release.ps1
           os: ${{inputs.os}}
@@ -186,5 +196,5 @@ jobs:
           ssh-key: ${{ secrets.SSH_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
           os: ${{inputs.os}}
-          febioVer: ${{ inputs.febioVer }}
-          fbsVer: ${{ inputs.fbsVer }}
+          febioVer: ${{ needs.release.outputs.febio_git_describe }}
+          fbsVer: ${{ needs.release.outputs.fbs_git_describe }}

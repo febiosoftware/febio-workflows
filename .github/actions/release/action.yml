@@ -49,8 +49,8 @@ runs:
       run: |
         ${{ inputs.script }}
       env:
-        # FEBIO_VER: ${{inputs.febioVer}}
-        # FBS_VER: ${{inputs.fbsVer}}
+        FEBIO_VER: ${{inputs.febioVer}}
+        FBS_VER: ${{inputs.fbsVer}}
         MACOS_PKCS12_PSWD: ${{ inputs.macos_pkcs12_pswd }}
         MACOS_SIGN_ID: ${{ inputs.macos_sign_id }}
         MACOS_SIGN_PWD: ${{ inputs.macos_sign_pwd }}
