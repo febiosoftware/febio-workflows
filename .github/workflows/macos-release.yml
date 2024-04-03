@@ -36,11 +36,13 @@ jobs:
       - name: Checkout FBS
         uses: actions/checkout@v4
         with:
+          fetch-depth: 1
           path: FEBioStudio
           ref: ci/releaseWorkflow
       - name: Checkout FEBio
         uses: actions/checkout@v4
         with:
+          fetch-depth: 1
           path: FEBio
           repository: febiosoftware/FEBio
           ref: ci/develop
