@@ -144,7 +144,7 @@ jobs:
         with:
           path: FEBioStudio
       - name: Release
-        uses: febiosoftware/febio-workflows/.github/actions/release@develop
+        uses: febiosoftware/febio-workflows/.github/actions/release@ci/releaseWorkflow
         with:
           febioVer: ${{ steps.describe_febio.outputs.git_describe_stripped }}
           fbsVer: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
