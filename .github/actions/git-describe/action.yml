@@ -25,5 +25,5 @@ runs:
         echo "git_describe=$git_describe" >> "$GITHUB_OUTPUT"
         echo "git_describe_stripped=${git_describe:1}" >> "$GITHUB_OUTPUT"
         echo $git_describe
-        echo $git_describe_stripped
+        echo ${git_describe:1}
         popd
