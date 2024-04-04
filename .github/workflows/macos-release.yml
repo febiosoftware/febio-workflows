@@ -68,36 +68,36 @@ jobs:
         id: describe_fbs
         with:
           path: FEBioStudio
-      - name: Release
-        uses: febiosoftware/febio-workflows/.github/actions/release@ci/releaseWorkflow
-        with:
-          febioVer: ${{ steps.describe_febio.outputs.git_describe_stripped }}
-          fbsVer: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
-          shell: ${{ inputs.shell }}
-          script: FEBioStudio/ci/${{inputs.os}}/release.sh
-          os: ${{inputs.os}}
-          ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-          macos_pkcs12_pswd: ${{ secrets.MACOS_PKCS12_PSWD }}
-          macos_sign_id: ${{ secrets.MACOS_SIGN_ID }}
-          macos_sign_pwd: ${{ secrets.MACOS_SIGN_PWD }}
-          macos_sign_team: ${{ secrets.MACOS_SIGN_TEAM }}
-  repo-artifacts:
-    name: Upload artifacts to repo
-    needs:
-      - release # required to get output from the start-runner job
-    runs-on: ubuntu-latest
-    if: ${{ success() }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-      - name: Repo Artifacts
-        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts-release@develop
-        with:
-          ssh-user: ${{ secrets.SSH_USER }}
-          ssh-key: ${{ secrets.SSH_KEY }}
-          ssh-host: ${{ secrets.SSH_HOST }}
-          os: ${{inputs.os}}
-          febioVer: ${{ needs.release.outputs.febio_git_describe }}
-          fbsVer: ${{ needs.release.outputs.fbs_git_describe }}
+      # - name: Release
+      #   uses: febiosoftware/febio-workflows/.github/actions/release@ci/releaseWorkflow
+      #   with:
+      #     febioVer: ${{ steps.describe_febio.outputs.git_describe_stripped }}
+      #     fbsVer: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
+      #     shell: ${{ inputs.shell }}
+      #     script: FEBioStudio/ci/${{inputs.os}}/release.sh
+      #     os: ${{inputs.os}}
+      #     ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
+      #     macos_pkcs12_pswd: ${{ secrets.MACOS_PKCS12_PSWD }}
+      #     macos_sign_id: ${{ secrets.MACOS_SIGN_ID }}
+      #     macos_sign_pwd: ${{ secrets.MACOS_SIGN_PWD }}
+      #     macos_sign_team: ${{ secrets.MACOS_SIGN_TEAM }}
+  # repo-artifacts:
+  #   name: Upload artifacts to repo
+  #   needs:
+  #     - release # required to get output from the start-runner job
+  #   runs-on: ubuntu-latest
+  #   if: ${{ success() }}
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v4
+  #       with:
+  #         submodules: 'true'
+  #     - name: Repo Artifacts
+  #       uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts-release@develop
+  #       with:
+  #         ssh-user: ${{ secrets.SSH_USER }}
+  #         ssh-key: ${{ secrets.SSH_KEY }}
+  #         ssh-host: ${{ secrets.SSH_HOST }}
+  #         os: ${{inputs.os}}
+  #         febioVer: ${{ needs.release.outputs.febio_git_describe }}
+  #         fbsVer: ${{ needs.release.outputs.fbs_git_describe }}

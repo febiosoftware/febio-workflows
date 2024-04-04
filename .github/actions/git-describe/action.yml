@@ -24,4 +24,6 @@ runs:
         git_describe=$(git describe || git rev-parse --short HEAD)
         echo "git_describe=$git_describe" >> "$GITHUB_OUTPUT"
         echo "git_describe_stripped=${git_describe:1}" >> "$GITHUB_OUTPUT"
+        echo $git_describe
+        echo $git_describe_stripped
         popd
