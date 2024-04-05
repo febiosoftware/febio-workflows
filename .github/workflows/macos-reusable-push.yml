@@ -48,6 +48,10 @@ on:
         required: false
         default: us-east-1b
         type: string
+      post-build:
+        required: false
+        type: boolean
+        default: false
 
 jobs:
   build:
@@ -75,6 +79,7 @@ jobs:
       - name: Build
         uses: febiosoftware/febio-workflows/.github/actions/build@develop
         with:
+          post-build: ${{ inputs.post-build }}
           shell: ${{ inputs.shell }}
           package-name: ${{ inputs.package-name }}
           requires-sdk: ${{ inputs.requires-sdk }}

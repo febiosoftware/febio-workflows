@@ -21,6 +21,10 @@ inputs:
   script:
     required: true
     type: string
+  post-build:
+    required: false
+    type: boolean
+    default: false
   os:
     required: true
     type: string
@@ -49,6 +53,8 @@ runs:
         sdk-config: ${{inputs.sdk-config}}
     - name: Build
       shell: ${{inputs.shell}}
+      env:
+        RUN_POST_BUILD: ${{ inputs.post-build == 'true' }}
       run: |
         ${{ inputs.script }}
     - name: Upload Artifacts
