@@ -81,7 +81,7 @@ jobs:
           role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
       - id: gh-token # Fetch github-token from aws-ssm
-        name: Git Describe
+        name: Git Token
         uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
         with:
           shell: ${{ inputs.shell }}
@@ -126,6 +126,12 @@ jobs:
         uses: febiosoftware/febio-workflows/.github/actions/git-describe@develop
         with:
           shell: ${{ inputs.shell }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Build
         uses: febiosoftware/febio-workflows/.github/actions/build@develop
         with:
@@ -155,6 +161,12 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
@@ -180,7 +192,7 @@ jobs:
           role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
       - id: gh-token # Fetch github-token from aws-ssm
-        name: Git Describe
+        name: Git Token
         uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
         with:
           shell: ${{ inputs.shell }}

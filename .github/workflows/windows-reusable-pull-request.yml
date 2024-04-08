@@ -85,7 +85,6 @@ jobs:
         uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
         with:
           shell: ${{ inputs.shell }}
-
       - name: Start EC2 runner
         id: start-ec2-runner
         uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
@@ -127,6 +126,12 @@ jobs:
         uses: febiosoftware/febio-workflows/.github/actions/git-describe@develop
         with:
           shell: ${{ inputs.shell }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Build
         uses: febiosoftware/febio-workflows/.github/actions/build@develop
         with:
@@ -156,6 +161,12 @@ jobs:
           fetch-depth: 0
           ref: ${{ github.event.pull_request.head.sha }}
           submodules: 'true'
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
