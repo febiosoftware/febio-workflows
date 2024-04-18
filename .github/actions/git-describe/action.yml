@@ -4,10 +4,15 @@ inputs:
   shell:
     require: true
     type: string
+  path:
+    require: false
+    type: string
+    default: "."
 outputs:
   git_describe:
     value: ${{ steps.git-describe.outputs.git_describe }}
-
+  git_describe_stripped:
+    value: ${{ steps.git-describe.outputs.git_describe_stripped }}
 
 runs:
   using: "composite"
@@ -15,4 +20,12 @@ runs:
     - id: git-describe
       shell: ${{inputs.shell}}
       run: |
-        echo "git_describe=$(git describe || git rev-parse --short HEAD)" >> "$GITHUB_OUTPUT"
+        pushd ${{inputs.path}}
+        git_describe=$(git describe || git rev-parse --short HEAD)
+        echo "git_describe=$git_describe" >> "$GITHUB_OUTPUT"
+
+        git_describe_stripped=${git_describe:1} # strip the 'v' from the front
+        git_describe_stripped=${git_describe_stripped%%-*} # strip off everything at or after the first -
+
+        echo "git_describe_stripped=$git_describe_stripped" >> "$GITHUB_OUTPUT"
+        popd

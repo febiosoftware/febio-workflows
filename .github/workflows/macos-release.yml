@@ -30,16 +30,19 @@ jobs:
     name: Release
     runs-on: self-hosted
     outputs:
-      git_describe: ${{ steps.git-describe.outputs.git_describe }}
+      febio_git_describe: ${{ steps.describe_febio.outputs.git_describe_stripped }}
+      fbs_git_describe: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
     steps:
       - name: Checkout FBS
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           path: FEBioStudio
           ref: ci/releaseWorkflow
       - name: Checkout FEBio
         uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           path: FEBio
           repository: febiosoftware/FEBio
           ref: ci/develop
@@ -55,16 +58,29 @@ jobs:
           path: FEBioHeat
           repository: febiosoftware/FEBioHeat
           ref: ci/develop
-      - name: Release
-        uses: febiosoftware/febio-workflows/.github/actions/release@develop
+      - name: Describe FEBio
+        uses: febioSoftware/febio-workflows/.github/actions/git-describe@ci/releaseWorkflow
+        id: describe_febio
         with:
-          febioVer: ${{ inputs.febioVer }}
-          fbsVer: ${{ inputs.fbsVer }}
+          path: FEBio
+      - name: Describe FBS
+        uses: febioSoftware/febio-workflows/.github/actions/git-describe@ci/releaseWorkflow
+        id: describe_fbs
+        with:
+          path: FEBioStudio
+      - name: Release
+        uses: febiosoftware/febio-workflows/.github/actions/release@ci/releaseWorkflow
+        with:
+          febioVer: ${{ steps.describe_febio.outputs.git_describe_stripped }}
+          fbsVer: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
           shell: ${{ inputs.shell }}
           script: FEBioStudio/ci/${{inputs.os}}/release.sh
           os: ${{inputs.os}}
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
-        secrets: inherit
+          macos_pkcs12_pswd: ${{ secrets.MACOS_PKCS12_PSWD }}
+          macos_sign_id: ${{ secrets.MACOS_SIGN_ID }}
+          macos_sign_pwd: ${{ secrets.MACOS_SIGN_PWD }}
+          macos_sign_team: ${{ secrets.MACOS_SIGN_TEAM }}
   repo-artifacts:
     name: Upload artifacts to repo
     needs:
@@ -83,5 +99,5 @@ jobs:
           ssh-key: ${{ secrets.SSH_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
           os: ${{inputs.os}}
-          febioVer: ${{ inputs.febioVer }}
-          fbsVer: ${{ inputs.fbsVer }}
+          febioVer: ${{ needs.release.outputs.febio_git_describe }}
+          fbsVer: ${{ needs.release.outputs.fbs_git_describe }}
