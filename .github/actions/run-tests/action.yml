@@ -34,7 +34,7 @@ runs:
           {
             "package_name": "febiochem",
             "package": "febiochem",
-            "sdk_path": "ci/develop",
+            "sdk_path": "develop",
             "version": "v1.0",
           }
     - name: Get FEBioHeat
@@ -46,7 +46,7 @@ runs:
           {
             "package_name": "febioheat",
             "package": "febioheat",
-            "sdk_path": "ci/develop",
+            "sdk_path": "develop",
             "version": "v1.0",
           }
     - name: Checkout
