@@ -77,7 +77,7 @@ jobs:
           role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
       - name: Build
-        uses: febiosoftware/febio-workflows/.github/actions/build@develop
+        uses: febiosoftware/febio-workflows/.github/actions/build@ci/use-latest-sdk
         with:
           post-build: ${{ inputs.post-build }}
           shell: ${{ inputs.shell }}

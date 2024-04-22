@@ -12,13 +12,14 @@ inputs:
     required: true
     type: string
   sdk-config:
-    required: true
+    required: false
     type: string
-
+    default: "{ }"
 runs:
   using: "composite"
   steps:
     - name: Get Inputs
+      if: ${{inputs.sdk-config}}
       id: sdk-config
       shell: ${{inputs.shell}}
       run: |
