@@ -3,11 +3,11 @@ on:
     inputs:
       register-runner-timeout:
         required: false
-        default: 5
+        default: 7
         type: number
       deregister-runner-timeout:
         required: false
-        default: 5
+        default: 7
         type: number
       shell:
         required: false
