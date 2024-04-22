@@ -1,6 +1,14 @@
 on:
   workflow_call:
     inputs:
+      register-runner-timeout:
+        required: false
+        default: 7
+        type: number
+      deregister-runner-timeout:
+        required: false
+        default: 7
+        type: number
       febioVer:
         required: true
         type: string
@@ -93,7 +101,7 @@ jobs:
           subnet-id: ${{ inputs.aws-subnet-id }}
           security-group-id: ${{ inputs.aws-sg-id }}
           availability-zone: ${{ inputs.aws-availability-zone }}
-          wait-for-registry-timeout: 7
+          wait-for-registry-timeout: ${{ inputs.register-runner-timeout }}
           aws-resource-tags: > # optional, requires additional permissions
             [
               {"Key": "Name", "Value": "ec2-github-runner"},
@@ -179,7 +187,7 @@ jobs:
         with:
           mode: stop
           os: ${{ inputs.os }}
-          wait-for-deregistry-timeout: 5
+          wait-for-deregistry-timeout: ${{ inputs.deregister-runner-timeout }}
           github-token: ${{ steps.gh-token.outputs.token}}
           label: ${{ needs.start-runner.outputs.label }}
           ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
