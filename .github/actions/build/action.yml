@@ -66,6 +66,9 @@ runs:
           cmbuild/bin
           cmbuild/lib
           !cmbuild/lib/*.a
+          !cmbuild/**/*.lib
+          !cmbuild/**/*.exp
+          !cmbuild/**/*.xml
     - name: Create and upload SDK
       if: ${{ inputs.package-sdk == 'true' && inputs.requires-sdk == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/create-sdk@develop
