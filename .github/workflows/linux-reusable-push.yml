@@ -235,7 +235,7 @@ jobs:
           fetch-depth: 1
           submodules: 'true'
       - name: Repo Artifacts
-        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
+        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@ci/use-latest-sdk
         with:
           runTests: ${{ inputs.runTests }}
           ssh-user: ${{ secrets.SSH_USER }}
