@@ -87,8 +87,8 @@ jobs:
   tests:
     if: inputs.runTests
     name: Run test suite
-      #needs:
-      #  - build
+    needs:
+      - build
     runs-on: self-hosted
     steps:
       - name: Checkout
