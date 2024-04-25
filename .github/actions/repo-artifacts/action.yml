@@ -31,12 +31,14 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/download-artifact@v4
+    - name: Download build artifacts
+      uses: actions/download-artifact@v4
       with:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
-    - uses: actions/download-artifact@v4
+    - name: Download test suite logs
+      uses: actions/download-artifact@v4
       if: ${{ inputs.runTests == 'true' }}
       continue-on-error: true
       with:
