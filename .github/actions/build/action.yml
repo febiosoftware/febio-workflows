@@ -46,7 +46,7 @@ runs:
   steps:
     - name: Get SDK
       if: ${{ inputs.requires-sdk == 'true' && inputs.package-sdk == 'false' }}
-      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@ci/use-latest-sdk
+      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
       with:
         os: ${{inputs.os}}
         arch: ${{inputs.arch}}

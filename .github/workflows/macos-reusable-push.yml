@@ -67,7 +67,7 @@ jobs:
           submodules: true
       - id: git-describe
         name: Git Describe
-        uses: febiosoftware/febio-workflows/.github/actions/git-describe@ci/use-latest-sdk
+        uses: febiosoftware/febio-workflows/.github/actions/git-describe@develop
         with:
           shell: ${{ inputs.shell }}
       - name: Configure AWS credentials
@@ -77,7 +77,7 @@ jobs:
           role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
       - name: Build
-        uses: febiosoftware/febio-workflows/.github/actions/build@ci/use-latest-sdk
+        uses: febiosoftware/febio-workflows/.github/actions/build@develop
         with:
           post-build: ${{ inputs.post-build }}
           shell: ${{ inputs.shell }}
@@ -107,7 +107,7 @@ jobs:
           role-session-name: ${{ inputs.aws-role-session-name }}
           aws-region: ${{ inputs.aws-region }}
       - name: Tests
-        uses: febiosoftware/febio-workflows/.github/actions/run-tests@ci/use-latest-sdk
+        uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
           script: ci/${{inputs.os}}/test.sh
           shell: ${{ inputs.shell }}
@@ -132,7 +132,7 @@ jobs:
           fetch-depth: 1
           submodules: true
       - name: Repo Artifacts
-        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@ci/use-latest-sdk
+        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
           runTests: ${{ inputs.runTests }}
           ssh-user: ${{ secrets.SSH_USER }}
