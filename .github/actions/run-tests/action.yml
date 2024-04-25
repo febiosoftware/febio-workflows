@@ -32,10 +32,8 @@ runs:
         arch: ${{inputs.arch}}
         sdk-config: |
           {
-            "package_name": "febiochem",
-            "package": "febiochem",
-            "sdk_path": "develop",
-            "version": "v1.0",
+            "package_path": "febiochem",
+            "package": "febiochem"
           }
     - name: Get FEBioHeat
       uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
@@ -44,10 +42,8 @@ runs:
         arch: ${{inputs.arch}}
         sdk-config: |
           {
-            "package_name": "febioheat",
-            "package": "febioheat",
-            "sdk_path": "develop",
-            "version": "v1.0",
+            "package_path": "febioheat",
+            "package": "febioheat"
           }
     - name: Checkout
       uses: actions/checkout@v4

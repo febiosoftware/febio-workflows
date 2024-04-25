@@ -12,19 +12,20 @@ inputs:
     required: true
     type: string
   sdk-config:
-    required: true
+    required: false
     type: string
-
+    default: "{ }"
 runs:
   using: "composite"
   steps:
     - name: Get Inputs
+      if: ${{inputs.sdk-config}}
       id: sdk-config
       shell: ${{inputs.shell}}
       run: |
         echo "version=${{fromJson(inputs.sdk-config).version}}" >> $GITHUB_OUTPUT
-        echo "sdk_path=${{fromJson(inputs.sdk-config).sdk_path}}" >> $GITHUB_OUTPUT
-        echo "package_name=${{fromJson(inputs.sdk-config).package_name}}" >> $GITHUB_OUTPUT
+        echo "package_branch=${{fromJson(inputs.sdk-config).package_branch}}" >> $GITHUB_OUTPUT
+        echo "package_path=${{fromJson(inputs.sdk-config).package_path}}" >> $GITHUB_OUTPUT
         echo "package=${{fromJson(inputs.sdk-config).package}}" >> $GITHUB_OUTPUT
         echo "bucket=${{fromJson(inputs.sdk-config).bucket}}" >> $GITHUB_OUTPUT
     - name: Fetch latest febio-sdk
@@ -33,8 +34,8 @@ runs:
         ci/common/linux/get-febio-sdk.sh
       env:
         OS: ${{inputs.os}}
-        FEBIO_SDK_BRANCH: ${{steps.sdk-config.outputs.sdk_path}}
-        PACKAGE_NAME: ${{steps.sdk-config.outputs.package_name}}
+        PACKAGE_BRANCH: ${{steps.sdk-config.outputs.package_branch}}
+        PACKAGE_PATH: ${{steps.sdk-config.outputs.package_path}}
         PACKAGE: ${{steps.sdk-config.outputs.package}}
         BUCKET: ${{steps.sdk-config.outputs.bucket}}
-        FEBIO_VERSION: ${{steps.sdk-config.outputs.version}}
+        VERSION: ${{steps.sdk-config.outputs.version}}

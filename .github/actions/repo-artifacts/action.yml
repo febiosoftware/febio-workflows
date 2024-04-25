@@ -1,6 +1,11 @@
-name: 'Run tests'
+name: 'Upload '
 description: 'Creates SDK and Uploads artifacts'
 inputs:
+  runTests:
+    description: "Run tests?"
+    required: false
+    type: boolean
+    default: false
   shell:
     require: false
     type: string
@@ -34,6 +39,7 @@ runs:
           cmbuild
     - name: Download test suite logs
       uses: actions/download-artifact@v4
+      if: ${{ inputs.runTests == 'true' }}
       continue-on-error: true
       with:
         name: testsuite-${{inputs.os}}-${{inputs.arch}}-logs

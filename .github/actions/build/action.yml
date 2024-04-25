@@ -45,7 +45,7 @@ runs:
   using: "composite"
   steps:
     - name: Get SDK
-      if: ${{ inputs.requires-sdk == 'true' && inputs.sdk-config && inputs.package-sdk == 'false' }}
+      if: ${{ inputs.requires-sdk == 'true' && inputs.package-sdk == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
       with:
         os: ${{inputs.os}}
