@@ -9,12 +9,6 @@ on:
         required: false
         default: 7
         type: number
-      febioVer:
-        required: true
-        type: string
-      fbsVer:
-        required: true
-        type: string
       shell:
         required: false
         default: bash
