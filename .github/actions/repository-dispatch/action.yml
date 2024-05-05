@@ -1,0 +1,31 @@
+name: 'Repository Dispatch'
+description: 'Dispatches repository workflow with event-type and client-paayload'
+inputs:
+  shell:
+    default: bash
+    required: false
+    type: string
+  github-pat-token:
+    required: true
+  client-payload:
+    required: true
+    type: string
+  event-type:
+    required: true
+    type: string
+  
+runs:
+  using: "composite"
+  steps:
+    - name: ""
+      shell: ${{inputs.shell}}
+      run: |
+         gh api \
+           --method POST \
+           -H "Accept: application/vnd.github+json" \
+           -H "X-GitHub-Api-Version: 2022-11-28" \
+           /repos/${{ github.repository }}/dispatches \
+           -F "event_type=${{inputs.event-type}}" \
+           -F "${{ inputs.client-payload }}"
+      env:
+        GH_TOKEN: ${{ inputs.github-pat-token }}
