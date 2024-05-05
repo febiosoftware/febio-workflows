@@ -1,0 +1,38 @@
+name: 'Creates annotated tag'
+description: 'Creates annotated tag, to be used by release workflow'
+inputs:
+  shell:
+    default: bash
+    required: false
+    type: string
+  git-user-email:
+    required: false
+    default: workflow@febio.org
+    type: string
+  git-user-name:
+    required: false
+    default: FEBIo Workflow
+    type: string
+  github-pat-token:
+    required: true
+
+runs:
+  using: "composite"
+  steps:
+    - name: "Checkout code"
+      uses: actions/checkout@v4
+    - name: "Configure git"
+      shell: ${{inputs.shell}}
+      run: |
+        git config user.email "${{ inputs.git-user-email }}"
+        git config user.name "${{ inputs.git-user-name }}"
+    - name: "Annotate tag"
+      shell: ${{inputs.shell}}
+      run: |
+        tag=${{ github.ref_name }}
+        date="$(git log -1 --format=%aD $tag | head -1)"
+        GIT_COMMITTER_DATE="$date" git tag -a -f $tag $tag -m "Annotated ${tag}"
+        git push --force origin $tag
+        git describe --tags
+      env:
+        GH_TOKEN: ${{ inputs.github-pat-token }}
