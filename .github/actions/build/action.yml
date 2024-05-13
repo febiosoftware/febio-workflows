@@ -2,7 +2,11 @@ name: 'Build'
 description: 'Builds project and uploads artifacts'
 inputs:
   shell:
-    require: true
+    required: true
+    type: string
+  repo-dir:
+    default: .
+    required: false
     type: string
   package-name:
     required: true
@@ -62,15 +66,15 @@ runs:
       with:
         name: ${{ inputs.package-name }}-${{inputs.os}}-${{inputs.arch}}
         path: |
-          cmbuild/Release
-          cmbuild/bin
-          cmbuild/lib
-          !cmbuild/lib/*.a
-          !cmbuild/**/*.lib
-          !cmbuild/**/*.exp
-          !cmbuild/**/*.xml
-          !cmbuild/**/*Updater*
-          !cmbuild/**/mvUtil*
+          ${{ inputs.repo-dir }}/cmbuild/Release
+          ${{ inputs.repo-dir }}/cmbuild/bin
+          ${{ inputs.repo-dir }}/cmbuild/lib
+          !${{ inputs.repo-dir }}/cmbuild/lib/*.a
+          !${{ inputs.repo-dir }}/cmbuild/**/*.lib
+          !${{ inputs.repo-dir }}/cmbuild/**/*.exp
+          !${{ inputs.repo-dir }}/cmbuild/**/*.xml
+          !${{ inputs.repo-dir }}/cmbuild/**/*Updater*
+          !${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
     - name: Create and upload SDK
       if: ${{ inputs.package-sdk == 'true' && inputs.requires-sdk == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/create-sdk@develop

@@ -26,25 +26,37 @@ runs:
         path: |
           cmbuild
     - name: Get FEBioChem
-      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+      uses: actions/download-artifact@v4
       with:
-        os: ${{inputs.os}}
-        arch: ${{inputs.arch}}
-        sdk-config: |
-          {
-            "package_path": "febiochem",
-            "package": "febiochem"
-          }
+        name: FEBioChem-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          febiochem
     - name: Get FEBioHeat
-      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+      uses: actions/download-artifact@v4
       with:
-        os: ${{inputs.os}}
-        arch: ${{inputs.arch}}
-        sdk-config: |
-          {
-            "package_path": "febioheat",
-            "package": "febioheat"
-          }
+        name: FEBioHeat-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          febioheat
+    # - name: Get FEBioChem
+    #   uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+    #   with:
+    #     os: ${{inputs.os}}
+    #     arch: ${{inputs.arch}}
+    #     sdk-config: |
+    #       {
+    #         "package_path": "febiochem",
+    #         "package": "febiochem"
+    #       }
+    # - name: Get FEBioHeat
+    #   uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+    #   with:
+    #     os: ${{inputs.os}}
+    #     arch: ${{inputs.arch}}
+    #     sdk-config: |
+    #       {
+    #         "package_path": "febioheat",
+    #         "package": "febioheat"
+    #       }
     - name: Checkout
       uses: actions/checkout@v4
       with:
