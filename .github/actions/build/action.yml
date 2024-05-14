@@ -75,6 +75,14 @@ runs:
           !${{ inputs.repo-dir }}/cmbuild/**/*.xml
           !${{ inputs.repo-dir }}/cmbuild/**/*Updater*
           !${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
+    - name: Upload Updater
+      if: ${{ inputs.package-name == 'febio-studio' }}
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ inputs.package-name }}-updater-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          ${{ inputs.repo-dir }}/cmbuild/**/FEBioStudioUpdater*
+          ${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
     - name: Create and upload SDK
       if: ${{ inputs.package-sdk == 'true' && inputs.requires-sdk == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/create-sdk@develop
