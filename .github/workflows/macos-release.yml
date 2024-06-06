@@ -32,26 +32,26 @@ jobs:
         with:
           fetch-depth: 0
           path: FEBioStudio
-          ref: develop
+          ref: master
       - name: Checkout FEBio
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           path: FEBio
           repository: febiosoftware/FEBio
-          ref: develop
+          ref: master
       - name: Checkout FEBioChem
         uses: actions/checkout@v4
         with:
           path: FEBioChem
           repository: febiosoftware/FEBioChem
-          ref: develop
+          ref: master
       - name: Checkout FEBioHeat
         uses: actions/checkout@v4
         with:
           path: FEBioHeat
           repository: febiosoftware/FEBioHeat
-          ref: develop
+          ref: master
       - name: Describe FEBio
         uses: febioSoftware/febio-workflows/.github/actions/git-describe@develop
         id: describe_febio
