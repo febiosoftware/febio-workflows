@@ -116,7 +116,7 @@ jobs:
         with:
           fetch-depth: 0
           path: FEBioStudio
-          ref: master
+          ref: develop
       - name: Checkout FEBio
         uses: actions/checkout@v4
         with:
