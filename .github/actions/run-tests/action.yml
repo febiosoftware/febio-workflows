@@ -60,7 +60,7 @@ runs:
     - name: Checkout
       uses: actions/checkout@v4
       with:
-        ref: 'overhaul'
+        ref: 'master'
         path: ./TestSuite
         repository: febiosoftware/TestSuite
         fetch-depth: 1
