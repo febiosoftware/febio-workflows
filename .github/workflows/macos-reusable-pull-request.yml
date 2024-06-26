@@ -111,3 +111,4 @@ jobs:
           package-name: ${{ inputs.package-name }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
+          git-token: ${{ secrets.TESTSUITE_WRITE }}

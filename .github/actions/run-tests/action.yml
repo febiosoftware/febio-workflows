@@ -25,6 +25,9 @@ inputs:
     required: false
     default: FEBIo Workflow
     type: string
+  git-token:
+    required: true
+    type: string
 runs:
   using: "composite"
   steps:
@@ -45,11 +48,6 @@ runs:
         name: FEBioHeat-${{inputs.os}}-${{inputs.arch}}
         path: |
           febioheat
-    - name: "Configure git"
-      shell: ${{inputs.shell}}
-      run: |
-        git config user.email "${{ inputs.git-user-email }}"
-        git config user.name "${{ inputs.git-user-name }}"
     - name: Checkout
       uses: actions/checkout@v4
       with:
@@ -57,11 +55,12 @@ runs:
         path: ./TestSuite
         repository: febiosoftware/TestSuite
         fetch-depth: 0
-        submodules: 'true'
-
+        token: ${{inputs.git-token}}
     - name: Run test suite
       shell: ${{inputs.shell}}
       run: |
+        git config user.email "${{ inputs.git-user-email }}"
+        git config user.name "${{ inputs.git-user-name }}"
         ${{ inputs.script }}
     - name: Upload Artifacts
       if: always()
