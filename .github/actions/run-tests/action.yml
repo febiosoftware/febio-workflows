@@ -63,7 +63,7 @@ runs:
         ref: 'master'
         path: ./TestSuite
         repository: febiosoftware/TestSuite
-        fetch-depth: 1
+        fetch-depth: 0
         submodules: 'true'
 
     - name: Run test suite
