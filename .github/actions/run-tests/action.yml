@@ -17,6 +17,14 @@ inputs:
   script:
     required: true
     type: string
+  git-user-email:
+    required: false
+    default: workflow@febio.org
+    type: string
+  git-user-name:
+    required: false
+    default: FEBIo Workflow
+    type: string
 runs:
   using: "composite"
   steps:
@@ -37,26 +45,11 @@ runs:
         name: FEBioHeat-${{inputs.os}}-${{inputs.arch}}
         path: |
           febioheat
-    # - name: Get FEBioChem
-    #   uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
-    #   with:
-    #     os: ${{inputs.os}}
-    #     arch: ${{inputs.arch}}
-    #     sdk-config: |
-    #       {
-    #         "package_path": "febiochem",
-    #         "package": "febiochem"
-    #       }
-    # - name: Get FEBioHeat
-    #   uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
-    #   with:
-    #     os: ${{inputs.os}}
-    #     arch: ${{inputs.arch}}
-    #     sdk-config: |
-    #       {
-    #         "package_path": "febioheat",
-    #         "package": "febioheat"
-    #       }
+    - name: "Configure git"
+      shell: ${{inputs.shell}}
+      run: |
+        git config user.email "${{ inputs.git-user-email }}"
+        git config user.name "${{ inputs.git-user-name }}"
     - name: Checkout
       uses: actions/checkout@v4
       with:
