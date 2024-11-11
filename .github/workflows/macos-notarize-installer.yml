@@ -1,0 +1,26 @@
+name: Notarize macOS Installer
+
+on:
+  workflow_dispatch:
+
+jobs:
+  printInfo:
+    name: "printInfo"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "printInfo"
+        id: annotated-tag
+        shell: bash
+        with:
+          github-pat-token: ${{ secrets.GITHUB_TOKEN }}
+        secrets: inherit
+        env:
+          MACOS_PKCS12_PSWD: ${{ secrets.MACOS_PKCS12_PSWD }}
+          MACOS_SIGN_ID: ${{ secrets.MACOS_SIGN_ID }}
+          MACOS_SIGN_PWD: ${{ secrets.MACOS_SIGN_PWD }}
+          MACOS_SIGN_TEAM: ${{ secrets.MACOS_SIGN_TEAM }}
+        run: |
+          echo $MACOS_PKCS12_PSWD
+          echo $MACOS_SIGN_ID
+          echo $MACOS_SIGN_PWD
+          echo $MACOS_SIGN_TEAM
