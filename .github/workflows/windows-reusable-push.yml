@@ -77,6 +77,9 @@ on:
         default: win
         type: string
 
+env:
+  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+
 jobs:
   start-runner:
     name: Start self-hosted EC2 runner
@@ -153,7 +156,7 @@ jobs:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
   tests:
-    if: inputs.runTests
+    if: ${{ (inputs.runTests) && (env.BRANCH_NAME == 'develop') }}
     name: Run test suite
     needs:
       - build
