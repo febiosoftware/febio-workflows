@@ -70,8 +70,9 @@ runs:
         SSH_KEY: ${{ inputs.ssh-key }}
         SSH_HOST: ${{ inputs.ssh-host }}
     - name: Extract branch name
-        shell: bash
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        shell: ${{inputs.shell}}
+        run: |
+          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
         id: extract_branch
     - name: Prep Branch Paths
         shell: ${{inputs.shell}}
