@@ -70,15 +70,15 @@ runs:
         SSH_KEY: ${{ inputs.ssh-key }}
         SSH_HOST: ${{ inputs.ssh-host }}
     - name: Extract branch name
-        shell: ${{inputs.shell}}
-        run: |
-          echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-        id: extract_branch
+      shell: ${{inputs.shell}}
+      run: |
+        echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+      id: extract_branch
     - name: Prep Branch Paths
-        shell: ${{inputs.shell}}
-        run: |
-          BRANCH=${{ steps.extract_branch.outputs.branch }}
-          ssh repo "python3 update2/FEBioStudio2Dev/prepBranchPaths.py $BRANCH"
+      shell: ${{inputs.shell}}
+      run: |
+        BRANCH=${{ steps.extract_branch.outputs.branch }}
+        ssh repo "python3 update2/FEBioStudio2Dev/prepBranchPaths.py $BRANCH"
     - name: Stage Build to Repo
       shell: ${{inputs.shell}}
       run: |
