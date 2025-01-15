@@ -53,9 +53,6 @@ on:
         type: boolean
         default: false
 
-env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
-
 jobs:
   build:
     name: Clone and build
@@ -92,7 +89,7 @@ jobs:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
   tests:
-    if: ${{ (inputs.runTests) && (env.BRANCH_NAME == 'develop') }}
+    if: inputs.runTests
     name: Run test suite
     needs:
       - build

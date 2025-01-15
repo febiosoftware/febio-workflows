@@ -80,9 +80,7 @@ on:
 permissions:
   id-token: write # This is required for requesting the JWT
   contents: read  # This is required for actions/checkout
-
-env:
-  BRANCH_NAME: ${{ github.head_ref || github.ref_name }}
+  
 
 jobs:
   start-runner:
@@ -162,7 +160,7 @@ jobs:
       git_describe: ${{ steps.git-describe.outputs.git_describe }}
 
   tests:
-    if: ${{ (inputs.runTests) && (env.BRANCH_NAME == 'develop') }}
+    if: inputs.runTests
     name: Run test suite
     needs:
       - build
