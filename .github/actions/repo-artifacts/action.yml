@@ -69,10 +69,19 @@ runs:
         SSH_USER: ${{ inputs.ssh-user }}
         SSH_KEY: ${{ inputs.ssh-key }}
         SSH_HOST: ${{ inputs.ssh-host }}
+    - name: Extract branch name
+        shell: bash
+        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
+        id: extract_branch
+    - name: Prep Branch Paths
+        shell: ${{inputs.shell}}
+        run: |
+          BRANCH=${{ steps.extract_branch.outputs.branch }}
+          ssh repo "python3 update2/FEBioStudio2Dev/prepBranchPaths.py $BRANCH"
     - name: Stage Build to Repo
       shell: ${{inputs.shell}}
       run: |
-        ci/${{inputs.os}}/scp-to-repo.sh
+        ci/${{inputs.os}}/scp-to-repo.sh ${{ steps.extract_branch.outputs.branch }}
     - name: Get OS Argument
       id: os-argument
       shell: ${{inputs.shell}}
@@ -103,4 +112,5 @@ runs:
       shell: ${{inputs.shell}}
       run: |
         OS_ARG=${{steps.os-argument.outputs.os-arg}}
-        ssh repo "python3 update2/FEBioStudio2Dev/makeDevRelease.py $OS_ARG"
+        BRANCH=${{ steps.extract_branch.outputs.branch }}
+        ssh repo "python3 update2/FEBioStudio2Dev/makeDevRelease.py $OS_ARG $BRANCH"
