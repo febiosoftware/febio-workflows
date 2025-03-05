@@ -91,7 +91,7 @@ runs:
       if: ${{inputs.python-module == 'true'}}
       uses: actions/upload-artifact@v4
       with:
-        name: $fbs-python-${{inputs.os}}-${{inputs.arch}}
+        name: fbs-python-${{inputs.os}}-${{inputs.arch}}
         path: |
           ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.so
           ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.dylib
