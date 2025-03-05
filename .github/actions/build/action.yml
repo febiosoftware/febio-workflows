@@ -29,6 +29,10 @@ inputs:
     required: false
     type: boolean
     default: false
+  python-module:
+    required: false
+    type: boolean
+    default: false
   os:
     required: true
     type: string
@@ -83,6 +87,15 @@ runs:
         path: |
           ${{ inputs.repo-dir }}/cmbuild/**/FEBioStudioUpdater*
           ${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
+    - name: Upload Python Module
+      if: ${{inputs.python-module == 'true'}}
+      uses: actions/upload-artifact@v4
+      with:
+        name: $fbs-python-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.so
+          ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.dylib
+          ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.pyd
     - name: Create and upload SDK
       if: ${{ inputs.package-sdk == 'true' && inputs.requires-sdk == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/create-sdk@develop

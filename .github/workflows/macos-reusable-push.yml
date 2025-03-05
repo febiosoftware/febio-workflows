@@ -32,6 +32,11 @@ on:
         required: false
         type: boolean
         default: false
+      python-module:
+        description: "Compile Python Module?"
+        required: false
+        type: boolean
+        default: false
       aws-region:
         default: us-east-1
         required: false
@@ -86,6 +91,7 @@ jobs:
           sdk-config: ${{ inputs.sdk-config }}
           package-sdk: ${{ inputs.package-sdk }}
           script: ci/${{inputs.os}}/build.sh
+          python-module: ${{ inputs.python-module }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
   tests:
@@ -174,6 +180,7 @@ jobs:
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
           runTests: ${{ inputs.runTests }}
+          python-module: ${{ inputs.python-module }}
           ssh-user: ${{ secrets.SSH_USER }}
           ssh-key: ${{ secrets.SSH_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}

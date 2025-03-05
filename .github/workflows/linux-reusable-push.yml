@@ -40,6 +40,11 @@ on:
         required: false
         type: boolean
         default: false
+      python-module:
+        description: "Compile Python Module?"
+        required: false
+        type: boolean
+        default: false
       aws-subnet-id:
         required: false
         default: subnet-064f21b53fc72cf44
@@ -153,6 +158,7 @@ jobs:
           sdk-config: ${{ inputs.sdk-config }}
           package-sdk: ${{ inputs.package-sdk }}
           script: ci/${{inputs.os}}/build.sh
+          python-module: ${{ inputs.python-module }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
           aws-region: ${{ inputs.aws-region }}
@@ -272,6 +278,7 @@ jobs:
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
           runTests: ${{ inputs.runTests }}
+          python-module: ${{ inputs.python-module }}
           ssh-user: ${{ secrets.SSH_USER }}
           ssh-key: ${{ secrets.SSH_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
