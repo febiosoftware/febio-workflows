@@ -7,6 +7,9 @@ inputs:
     type: string
   github-pat-token:
     required: true
+  repository:
+    required: true
+    type: string
   client-payload:
     required: true
     type: string
@@ -24,7 +27,7 @@ runs:
            --method POST \
            -H "Accept: application/vnd.github+json" \
            -H "X-GitHub-Api-Version: 2022-11-28" \
-           /repos/${{ github.repository }}/dispatches \
+           /repos/febiosoftware/${{ inputs.repository }}/dispatches \
            -F "event_type=${{inputs.event-type}}" \
            -F "${{ inputs.client-payload }}"
       env:
