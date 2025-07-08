@@ -163,6 +163,38 @@ jobs:
       - start-runner # required to get output from the start-runner job
     runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
     steps:
+      - name: Checkout FEBioChem
+        uses: actions/checkout@v4
+        with:
+          path: FEBioChem
+          repository: febiosoftware/FEBioChem
+          ref: develop
+      - name: Checkout FEBioHeat
+        uses: actions/checkout@v4
+        with:
+          path: FEBioHeat
+          repository: febiosoftware/FEBioHeat
+          ref: develop
+      - name: Build FEBioChem
+        uses: febiosoftware/febio-workflows/.github/actions/build@develop
+        with:
+          shell: ${{ inputs.shell }}
+          repo-dir: FEBioChem
+          package-name: FEBioChem
+          script: FEBioChem/ci/${{inputs.os}}/build.bat
+          os: ${{inputs.os}}
+          arch: ${{inputs.arch}}
+          aws-region: ${{ inputs.aws-region }}
+      - name: Build FEBioHeat
+        uses: febiosoftware/febio-workflows/.github/actions/build@develop
+        with:
+          shell: ${{ inputs.shell }}
+          repo-dir: FEBioHeat
+          package-name: FEBioHeat
+          script: FEBioHeat/ci/${{inputs.os}}/build.bat
+          os: ${{inputs.os}}
+          arch: ${{inputs.arch}}
+          aws-region: ${{ inputs.aws-region }}
       - name: Checkout
         uses: actions/checkout@v4
         with:
