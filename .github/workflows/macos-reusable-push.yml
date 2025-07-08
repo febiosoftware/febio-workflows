@@ -139,11 +139,6 @@ jobs:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
           aws-region: ${{ inputs.aws-region }}
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
-          submodules: true
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v4
         with:
