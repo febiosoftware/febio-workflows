@@ -138,12 +138,12 @@ jobs:
         with:
           fetch-depth: 1
           submodules: true
-      # - name: Configure AWS credentials
-      #   uses: aws-actions/configure-aws-credentials@v4
-      #   with:
-      #     role-to-assume: ${{ inputs.aws-role-to-assume }}
-      #     role-session-name: ${{ inputs.aws-role-session-name }}
-      #     aws-region: ${{ inputs.aws-region }}
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:

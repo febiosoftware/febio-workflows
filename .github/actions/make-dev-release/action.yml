@@ -52,21 +52,21 @@ runs:
       run: |
         echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
       id: extract_branch
-    # - name: Prep Branch Paths
-    #   shell: bash
-    #   run: |
-    #     BRANCH=${{ steps.extract_branch.outputs.branch }}
-    #     ssh repo "python3 update2/FEBioStudio2Dev/prepBranchPaths.py $BRANCH"
-    # - name: Stage Build to Repo
-    #   shell: bash
-    #   run: |
-    #     ci/${{inputs.os}}/scp-to-repo.sh ${{ steps.extract_branch.outputs.branch }}
-    # - name: Make Dev Release
-    #   shell: bash
-    #   run: |
-    #     OS_ARG=${{ inputs.os-arg }}
-    #     BRANCH=${{ steps.extract_branch.outputs.branch }}
-    #     ssh repo "python3 update2/FEBioStudio2Dev/makeDevRelease.py $OS_ARG $BRANCH"
+    - name: Prep Branch Paths
+      shell: bash
+      run: |
+        BRANCH=${{ steps.extract_branch.outputs.branch }}
+        ssh repo "python3 update2/FEBioStudio2Dev/prepBranchPaths.py $BRANCH"
+    - name: Stage Build to Repo
+      shell: bash
+      run: |
+        ci/${{inputs.os}}/scp-to-repo.sh ${{ steps.extract_branch.outputs.branch }}
+    - name: Make Dev Release
+      shell: bash
+      run: |
+        OS_ARG=${{ inputs.os-arg }}
+        BRANCH=${{ steps.extract_branch.outputs.branch }}
+        ssh repo "python3 update2/FEBioStudio2Dev/makeDevRelease.py $OS_ARG $BRANCH"
     - name: Push and update plugins
       if: ${{ inputs.runTests == 'true' }}
       shell: bash
