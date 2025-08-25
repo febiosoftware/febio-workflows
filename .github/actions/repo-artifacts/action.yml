@@ -19,6 +19,14 @@ inputs:
   os:
     required: true
     type: string
+  plugin:
+    default: false
+    required: false
+    type: boolean
+  febio-version:
+    default: ""
+    required: false
+    type: string
   arch:
     required: true
     type: string
@@ -41,38 +49,6 @@ runs:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
-    - name: Download test suite logs
-      uses: actions/download-artifact@v4
-      if: ${{ inputs.runTests == 'true' }}
-      continue-on-error: true
-      with:
-        name: testsuite-${{inputs.os}}-${{inputs.arch}}-logs
-        path: |
-          testLogs
-    - name: Download FEBioChem
-      uses: actions/download-artifact@v4
-      if: ${{ inputs.runTests == 'true' }}
-      continue-on-error: true
-      with:
-        name: FEBioChem-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          ChemArtifacts
-    - name: Download FEBioHeat
-      uses: actions/download-artifact@v4
-      if: ${{ inputs.runTests == 'true' }}
-      continue-on-error: true
-      with:
-        name: FEBioHeat-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          HeatArtifacts
-    - name: Download Python Module
-      uses: actions/download-artifact@v4
-      if: ${{ inputs.python-module == 'true' }}
-      continue-on-error: true
-      with:
-        name: fbs-python-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          pythonModule
     - name: Configure SSH
       shell: ${{inputs.shell}}
       run: |
@@ -81,20 +57,6 @@ runs:
         SSH_USER: ${{ inputs.ssh-user }}
         SSH_KEY: ${{ inputs.ssh-key }}
         SSH_HOST: ${{ inputs.ssh-host }}
-    - name: Extract branch name
-      shell: ${{inputs.shell}}
-      run: |
-        echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF#refs/heads/}}" >> $GITHUB_OUTPUT
-      id: extract_branch
-    - name: Prep Branch Paths
-      shell: ${{inputs.shell}}
-      run: |
-        BRANCH=${{ steps.extract_branch.outputs.branch }}
-        ssh repo "python3 update2/FEBioStudio2Dev/prepBranchPaths.py $BRANCH"
-    - name: Stage Build to Repo
-      shell: ${{inputs.shell}}
-      run: |
-        ci/${{inputs.os}}/scp-to-repo.sh ${{ steps.extract_branch.outputs.branch }}
     - name: Get OS Argument
       id: os-argument
       shell: ${{inputs.shell}}
@@ -120,10 +82,18 @@ runs:
 
         esac
         echo "os-arg=$OS_ARG" >> $GITHUB_OUTPUT
-
     - name: Make Dev Release
-      shell: ${{inputs.shell}}
-      run: |
-        OS_ARG=${{steps.os-argument.outputs.os-arg}}
-        BRANCH=${{ steps.extract_branch.outputs.branch }}
-        ssh repo "python3 update2/FEBioStudio2Dev/makeDevRelease.py $OS_ARG $BRANCH"
+      if: ${{ inputs.plugin == 'false' }}
+      uses: febiosoftware/febio-workflows/.github/actions/make-dev-release@develop
+      with:
+        runTests: ${{ inputs.runTests }}
+        python-module: ${{ inputs.python-module }}
+        os: ${{ inputs.os }}
+        os-arg: ${{ steps.os-argument.outputs.os-arg }}
+        arch: ${{ inputs.arch }}
+    - name: Make Plugin Release
+      if: ${{ inputs.plugin == 'true' }}
+      uses: febiosoftware/febio-workflows/.github/actions/make-plugin-release@develop
+      with:
+        os-arg: ${{ steps.os-argument.outputs.os-arg }}
+        febio-version: ${{ inputs.febio-version }}

@@ -1,0 +1,27 @@
+name: 'Uplaods Plugins'
+description: 'Gathers and uploads plugins'
+inputs:
+  os:
+    required: true
+    type: string
+  arch:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Gather plugins
+      shell: bash
+      run: |
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          python.exe ci/gather-plugins.py
+        else
+          python3 ci/gather-plugins.py
+        fi
+    - name: Upload Artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: plugins-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          plugins

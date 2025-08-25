@@ -1,5 +1,5 @@
-name: 'Build'
-description: 'Builds project and uploads artifacts'
+name: 'Git Describe'
+description: 'Gets the version number from git describe'
 inputs:
   shell:
     require: true
@@ -21,11 +21,14 @@ runs:
       shell: ${{inputs.shell}}
       run: |
         pushd ${{inputs.path}}
+        git fetch --tags --force
         git_describe=$(git describe || git rev-parse --short HEAD)
+        echo "git_describe=$git_describe"
         echo "git_describe=$git_describe" >> "$GITHUB_OUTPUT"
 
         git_describe_stripped=${git_describe:1} # strip the 'v' from the front
         git_describe_stripped=${git_describe_stripped%%-*} # strip off everything at or after the first -
 
+        echo "git_describe_stripped=$git_describe_stripped"
         echo "git_describe_stripped=$git_describe_stripped" >> "$GITHUB_OUTPUT"
         popd

@@ -39,20 +39,15 @@ inputs:
   arch:
     required: true
     type: string
-  aws-access-key-id:
-    required: true
-    type: string
-  aws-secret-access-key:
-    required: true
-    type: string
-  aws-region:
-    required: true
-    type: string
+outputs:
+  febio-version:
+    value: ${{ steps.get-sdk.outputs.febio-version }}
 
 runs:
   using: "composite"
   steps:
     - name: Get SDK
+      id: get-sdk
       if: ${{ inputs.requires-sdk == 'true' && inputs.package-sdk == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
       with:

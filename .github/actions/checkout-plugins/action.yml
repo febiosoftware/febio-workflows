@@ -1,0 +1,26 @@
+name: 'Checkout Plugin Repos'
+description: 'Checks out all repos with a Plugin topic'
+inputs:
+  repo_list:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout plugin repos
+      shell: bash
+      run: |
+        mkdir pluginRepos
+        pushd pluginRepos
+
+        echo "Checking out repos: $REPO_LIST"
+        IFS=',' read -ra REPOS <<< "$REPO_LIST"
+        for repo in "${REPOS[@]}"; do
+          echo "Checking out $repo..."
+          git clone -b workflowTest "https://github.com/febiosoftware/$repo.git"
+        done
+
+        popd 
+      env:
+        REPO_LIST: ${{ inputs.repo_list }}

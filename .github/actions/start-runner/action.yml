@@ -1,0 +1,88 @@
+name: 'Start Runner '
+description: 'Starts the AWS runner'
+inputs:
+  os:
+    required: true
+    type: string
+  aws-ami-id:
+    required: true
+    type: string
+  aws-region:
+    required: true
+    type: string
+  aws-role-to-assume:
+    required: true
+    type: string
+  aws-role-session-name:
+    required: true
+    type: string
+  
+  # Used as local variables. Don't need to pass
+  register-runner-timeout:
+    required: false
+    default: 7
+    type: number
+  aws-subnet-id:
+    required: false
+    default: subnet-064f21b53fc72cf44
+    type: string
+  aws-sg-id:
+    required: false
+    default: sg-0ca7912782cf1538b
+    type: string
+  aws-instance-type:
+    required: false
+    default: c5a.8xlarge
+    type: string
+  aws-availability-zone:
+    required: false
+    default: us-east-1b
+    type: string
+  key-pair:
+    required: false
+    default: win
+    type: string
+
+outputs:
+  label:
+    description: "The runner label"
+    value: ${{ steps.start-ec2-runner.outputs.label }}
+  ec2-instance-id:
+    description: "The EC2 instance ID"
+    value: ${{ steps.start-ec2-runner.outputs.ec2-instance-id }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: Configure AWS credentials
+      uses: aws-actions/configure-aws-credentials@v4
+      with:
+        role-to-assume: ${{ inputs.aws-role-to-assume }}
+        role-session-name: ${{ inputs.aws-role-session-name }}
+        aws-region: ${{ inputs.aws-region }}
+    
+    - name: Git Describe # Fetch github-token from aws-ssm
+      id: gh-token 
+      uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
+    
+    - name: Start EC2 runner
+      id: start-ec2-runner
+      uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
+      with:
+        mode: start
+        key-pair: ${{ inputs.key-pair }}
+        os: ${{ inputs.os }}
+        github-token: ${{ steps.gh-token.outputs.token}}
+        ec2-image-id: ${{ inputs.aws-ami-id}}
+        ec2-instance-type: ${{ inputs.aws-instance-type }}
+        subnet-id: ${{ inputs.aws-subnet-id }}
+        security-group-id: ${{ inputs.aws-sg-id }}
+        availability-zone: ${{ inputs.aws-availability-zone }}
+        wait-for-registry-timeout: ${{ inputs.register-runner-timeout }}
+        aws-resource-tags: > # optional, requires additional permissions
+          [
+            {"Key": "Name", "Value": "ec2-github-runner"},
+            {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
+            {"Key": "os", "Value": "${{ inputs.os }}"}
+          ]
+

@@ -1,0 +1,33 @@
+name: 'Upload '
+description: 'Creates SDK and Uploads artifacts'
+inputs:
+  os-arg:
+    required: true
+    type: string
+  febio-version:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Make plugin release
+      shell: bash
+      run: |
+        # find the version.h file
+        VERSION_H=$(find . -type f -name "version.h" -print -quit)
+        VERSION_H=$(realpath "$VERSION_H")
+
+        # extract the version 
+        major=$(grep '#define VERSION' $VERSION_H | awk '{print $3}')
+        minor=$(grep '#define SUBVERSION' $VERSION_H | awk '{print $3}')
+        patch=$(grep '#define SUBSUBVERSION' $VERSION_H | awk '{print $3}')
+        PLUGIN_VERSION=$major.$minor.$patch
+
+        REPO_NAME=${GITHUB_REPOSITORY#*/}
+        OS_ARG=${{ inputs.os-arg }}
+        FEBIO_VER=${{ inputs.febio-version }}
+
+        scp cmbuild/*/*.* repo:/root/pluginRepo/files/$REPO_NAME/develop/stage/
+        
+        ssh repo "python3 /root/modelServer/plugins.py -d $REPO_NAME $PLUGIN_VERSION $FEBIO_VER $OS_ARG"

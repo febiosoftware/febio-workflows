@@ -1,0 +1,45 @@
+name: 'Build Plugins'
+description: 'Builds the checked out plugins'
+inputs:
+  repo_list:
+    required: true
+    type: string
+
+runs:
+  using: "composite"
+  steps:
+    - name: Checkout plugin repos
+      shell: bash
+      run: |
+        IFS=',' read -ra repos <<< "$REPO_LIST"
+        for repo in "${repos[@]}"; do
+          echo "🔨 Building $repo on $RUNNER_OS..."
+          case "$RUNNER_OS" in
+            Windows)
+              script="pluginRepos\\$repo\\ci\\Windows\\build.bat"
+              ;;
+            macOS)
+              script="pluginRepos/$repo/ci/macOS/build.sh"
+              ;;
+            Linux)
+              script="pluginRepos/$repo/ci/Linux/build.sh"
+              ;;
+            *)
+              echo "❌ Unknown OS: $RUNNER_OS"
+              exit 1
+              ;;
+          esac
+
+          if [ -f "$script" ]; then
+            echo "▶ Running $script"
+            if [[ "$RUNNER_OS" == "Windows" ]]; then
+              cmd.exe //c "$script"
+            else
+              bash "$script"
+            fi
+          else
+            echo "⚠️ No build script found for $RUNNER_OS in $repo"
+          fi
+        done
+      env:
+        REPO_LIST: ${{ inputs.repo_list }}

@@ -15,6 +15,10 @@ inputs:
     required: false
     type: string
     default: "{ }"
+outputs:
+  febio-version:
+    value: ${{ steps.get-version.outputs.febio-version }}
+
 runs:
   using: "composite"
   steps:
@@ -39,3 +43,11 @@ runs:
         PACKAGE: ${{steps.sdk-config.outputs.package}}
         BUCKET: ${{steps.sdk-config.outputs.bucket}}
         VERSION: ${{steps.sdk-config.outputs.version}}
+    - name: Extract SDK version
+      id: get-version
+      shell: bash
+      run: |
+        major=$(grep '#define VERSION' febio4-sdk/include/FEBioLib/version.h | awk '{print $3}')
+        minor=$(grep '#define SUBVERSION' febio4-sdk/include/FEBioLib/version.h | awk '{print $3}')
+        patch=$(grep '#define SUBSUBVERSION' febio4-sdk/include/FEBioLib/version.h | awk '{print $3}')
+        echo "febio-version=$major.$minor.$patch" >> $GITHUB_OUTPUT

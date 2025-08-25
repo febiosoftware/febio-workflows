@@ -36,25 +36,17 @@ runs:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
-    - name: Get FEBioChem
-      uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v4
       with:
-        name: FEBioChem-${{inputs.os}}-${{inputs.arch}}
+        name: plugins-${{inputs.os}}-${{inputs.arch}}
         path: |
-          febiochem
-    - name: Get FEBioHeat
-      uses: actions/download-artifact@v4
-      with:
-        name: FEBioHeat-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          febioheat
+          plugins
     - name: Checkout
       uses: actions/checkout@v4
       with:
         ref: 'master'
         path: ./TestSuite
         repository: febiosoftware/TestSuite
-        fetch-depth: 0
         token: ${{inputs.git-token}}
     - name: Run test suite
       shell: ${{inputs.shell}}

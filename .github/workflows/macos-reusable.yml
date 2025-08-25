@@ -1,0 +1,218 @@
+on:
+  workflow_call:
+    inputs:
+      shell:
+        required: false
+        default: bash
+        type: string
+      package-name:
+        required: true
+        type: string
+      plugin-name:
+        default: ""
+        required: false
+        type: string
+      package-sdk:
+        default: false
+        required: false
+        type: boolean
+      requires-sdk:
+        default: false
+        required: false
+        type: boolean
+      sdk-config:
+        required: false
+        type: string
+      os:
+        default: macOS
+        required: false
+        type: string
+      arch:
+        default: X64
+        required: false
+        type: string
+      runTests:
+        description: "Run tests?"
+        required: false
+        type: boolean
+        default: false
+      python-module:
+        description: "Compile Python Module?"
+        required: false
+        type: boolean
+        default: false
+      aws-region:
+        default: us-east-1
+        required: false
+        type: string
+      aws-role-to-assume:
+        required: false
+        default: arn:aws:iam::353328028284:role/github-actions-runner
+        type: string
+      aws-role-session-name:
+        required: false
+        default: febio-github-actions-runner-session
+        type: string
+      post-build:
+        required: false
+        type: boolean
+        default: false
+      publish:
+        required: false
+        type: boolean
+        default: false
+      plugin:
+        required: false
+        type: boolean
+        default: false
+
+jobs:
+  build:
+    name: Clone and build
+    runs-on: self-hosted
+    outputs:
+      febio-version: ${{ steps.build.outputs.febio-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
+      - name: Build
+        id: build
+        uses: febiosoftware/febio-workflows/.github/actions/build@develop
+        with:
+          post-build: ${{ inputs.post-build }}
+          shell: ${{ inputs.shell }}
+          package-name: ${{ inputs.package-name }}
+          requires-sdk: ${{ inputs.requires-sdk }}
+          sdk-config: ${{ inputs.sdk-config }}
+          package-sdk: ${{ inputs.package-sdk }}
+          script: ci/${{inputs.os}}/build.sh
+          python-module: ${{ inputs.python-module }}
+          os: ${{inputs.os}}
+          arch: ${{inputs.arch}}
+      - name: Get plugin repos
+        if: inputs.runTests
+        id: get-plugin-repos
+        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout plugin repos
+        if: inputs.runTests
+        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
+        with:
+          repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
+      - name: Build plugins
+        if: inputs.runTests 
+        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@develop
+        with:
+          repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
+      - name: Upload plugins 
+        if: inputs.runTests
+        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
+        with:
+          os: ${{inputs.os}}
+          arch: ${{inputs.arch}}
+  
+  tests:
+    if: inputs.runTests
+    name: Run test suite
+    needs:
+      - build
+    runs-on: self-hosted
+    steps:
+      - name: Download SDK
+        uses: actions/download-artifact@v4
+        with:
+          name: ${{ inputs.package-name }}-sdk-${{inputs.os}}-${{inputs.arch}}
+          path: |
+            febio4-sdk
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          submodules: true
+      # - name: Configure AWS credentials
+      #   uses: aws-actions/configure-aws-credentials@v4
+      #   with:
+      #     role-to-assume: ${{ inputs.aws-role-to-assume }}
+      #     role-session-name: ${{ inputs.aws-role-session-name }}
+      #     aws-region: ${{ inputs.aws-region }}
+      - name: Tests
+        uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
+        with:
+          script: ci/${{inputs.os}}/test.sh
+          shell: ${{ inputs.shell }}
+          package-name: ${{ inputs.package-name }}
+          os: ${{inputs.os}}
+          arch: ${{inputs.arch}}
+          git-token: ${{ secrets.TESTSUITE_WRITE }}
+  
+  repo-artifacts:
+    name: Upload artifacts to repo
+    needs:
+      - build
+      - tests
+    runs-on: ubuntu-latest
+    if: >
+      always() && inputs.publish &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
+      ! github.event.pull_request.head.repo.fork
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Repo Artifacts
+        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
+        with:
+          runTests: ${{ inputs.runTests }}
+          python-module: ${{ inputs.python-module }}
+          ssh-user: ${{ secrets.SSH_USER }}
+          ssh-key: ${{ secrets.SSH_KEY }}
+          ssh-host: ${{ secrets.SSH_HOST }}
+          shell: ${{ inputs.shell }}
+          package-name: ${{ inputs.package-name }}
+          os: ${{inputs.os}}
+          arch: ${{inputs.arch}}
+          plugin: ${{inputs.plugin}}
+          febio-version: ${{ needs.build.outputs.febio-version }}
+  
+  publish-to-s3:
+    name: Publish to S3
+    needs:
+      - build
+      - tests
+    runs-on: ubuntu-latest
+    if: >
+      always() && inputs.publish &&
+      contains(fromJson('["success"]'), needs.build.result) &&
+      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
+      ! github.event.pull_request.head.repo.fork
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ inputs.aws-role-to-assume }}
+          role-session-name: ${{ inputs.aws-role-session-name }}
+          aws-region: ${{ inputs.aws-region }}
+      - name: Publish To S3
+        uses: febiosoftware/febio-workflows/.github/actions/publish-to-s3@develop
+        with:
+          shell: ${{ inputs.shell }}
+          package-name: ${{ inputs.package-name }}
+          package-sdk: ${{ inputs.package-sdk }}
+          os: ${{inputs.os}}
+          arch: ${{inputs.arch}}
+  

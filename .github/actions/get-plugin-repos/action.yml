@@ -1,0 +1,33 @@
+name: 'Get Plugin Repos'
+description: 'Finds and returns all repos marked with a Plugin topic'
+inputs:
+  github_token:
+    required: true
+    type: string
+outputs:
+  repo_list:
+    value: ${{ steps.list_repos.outputs.repo_list }}
+
+runs:
+  using: "composite"
+  steps:
+    - name: List plugin repos
+      id: list_repos
+      shell: bash
+      run: |
+        echo "Fetching repos for org febiosoftware with topic 'plugin'..."
+        
+        # Get all repos (paginated)
+        repos=$(curl -s -H "Authorization: token $GITHUB_TOKEN" \
+          -H "Accept: application/vnd.github.mercy-preview+json" \
+          "https://api.github.com/orgs/febiosoftware/repos?per_page=100" \
+          | jq -r '.[] | select(.topics | index("plugin")) | .name')
+
+        echo "Repos found:"
+        echo "$repos"
+
+        # Save the repo list for later steps
+        repo_list=$(echo "$repos" | tr -d '\r' | tr '\n' ',' | sed 's/,$//')
+        echo "repo_list=$repo_list" >> "$GITHUB_OUTPUT"
+      env:
+        GITHUB_TOKEN: ${{ inputs.github_token }}
