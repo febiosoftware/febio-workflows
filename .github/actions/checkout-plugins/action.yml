@@ -4,6 +4,10 @@ inputs:
   repo_list:
     required: true
     type: string
+  branch:
+    required: false
+    type: string
+    default: develop
 
 runs:
   using: "composite"
@@ -18,9 +22,10 @@ runs:
         IFS=',' read -ra REPOS <<< "$REPO_LIST"
         for repo in "${REPOS[@]}"; do
           echo "Checking out $repo..."
-          git clone -b workflowTest "https://github.com/febiosoftware/$repo.git"
+          git clone -b $BRANCH "https://github.com/febiosoftware/$repo.git"
         done
 
         popd 
       env:
         REPO_LIST: ${{ inputs.repo_list }}
+        BRANCH: ${{ inputs.branch }}
