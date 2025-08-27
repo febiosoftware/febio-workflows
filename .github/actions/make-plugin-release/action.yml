@@ -19,9 +19,9 @@ runs:
         VERSION_H=$(realpath "$VERSION_H")
 
         # extract the version 
-        major=$(grep '#define VERSION' $VERSION_H | awk '{print $3}')
-        minor=$(grep '#define SUBVERSION' $VERSION_H | awk '{print $3}')
-        patch=$(grep '#define SUBSUBVERSION' $VERSION_H | awk '{print $3}')
+        major=$(grep '#define VERSION' $VERSION_H | awk '{print $NF}' | tr -d '\r')
+        minor=$(grep '#define SUBVERSION' $VERSION_H | awk '{print $NF}' | tr -d '\r')
+        patch=$(grep '#define SUBSUBVERSION' $VERSION_H | awk '{print $NF}' | tr -d '\r')
         PLUGIN_VERSION=$major.$minor.$patch
 
         REPO_NAME=${GITHUB_REPOSITORY#*/}
