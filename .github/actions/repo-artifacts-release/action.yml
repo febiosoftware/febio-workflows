@@ -4,6 +4,9 @@ inputs:
   os:
     required: true
     type: string
+  arch:
+    required: true
+    type: string
   febioVer:
     required: true
     type: string
@@ -28,6 +31,12 @@ runs:
         name: ${{inputs.os}}-Release-Artifacts
         path: |
           artifacts
+    - name: Download Plugins
+      uses: actions/download-artifact@v4
+      with:
+        name: plugins-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          plugins
     - name: Configure SSH
       shell: bash
       run: |
@@ -44,3 +53,10 @@ runs:
       shell: bash
       run: |
         ssh repo "python3 /root/modelServer/makeRelease.py ${{inputs.os}} ${{inputs.febioVer}} ${{inputs.fbsVer}}"
+    - name: Push and update plugins
+      shell: bash
+      run: |
+          python3 ci/common/repo-plugins.py
+      env:
+        OS: ${{ inputs.os }}
+        DEV_RELEASE: 0

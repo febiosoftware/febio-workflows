@@ -97,3 +97,4 @@ runs:
       with:
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
         febio-version: ${{ inputs.febio-version }}
+        dev-flag: -d

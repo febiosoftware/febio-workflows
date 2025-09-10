@@ -71,6 +71,7 @@ runs:
       if: ${{ inputs.runTests == 'true' }}
       shell: bash
       run: |
-          python3 ci/repo-plugins.py
+          python3 ci/common/repo-plugins.py
       env:
         OS: ${{ inputs.os }}
+        DEV_RELEASE: 1
