@@ -31,7 +31,7 @@ runs:
     - name: Configure SSH
       shell: bash
       run: |
-        ci/common/linux/configure-ssh.sh
+        ci/common/configure-ssh.sh
       env:
         SSH_USER: ${{ inputs.ssh-user }}
         SSH_KEY: ${{ inputs.ssh-key }}

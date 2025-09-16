@@ -127,12 +127,6 @@ jobs:
       - build
     runs-on: self-hosted
     steps:
-      - name: Download SDK
-        uses: actions/download-artifact@v4
-        with:
-          name: ${{ inputs.package-name }}-sdk-${{inputs.os}}-${{inputs.arch}}
-          path: |
-            febio4-sdk
       - name: Checkout
         uses: actions/checkout@v4
         with:
@@ -175,6 +169,7 @@ jobs:
         with:
           runTests: ${{ inputs.runTests }}
           python-module: ${{ inputs.python-module }}
+          package-sdk: ${{ inputs.package-sdk }}
           ssh-user: ${{ secrets.SSH_USER }}
           ssh-key: ${{ secrets.SSH_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}
