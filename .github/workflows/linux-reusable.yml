@@ -203,6 +203,7 @@ jobs:
         with:
           runTests: ${{ inputs.runTests }}
           python-module: ${{ inputs.python-module }}
+          package-sdk: ${{ inputs.package-sdk }}
           ssh-user: ${{ secrets.SSH_USER }}
           ssh-key: ${{ secrets.SSH_KEY }}
           ssh-host: ${{ secrets.SSH_HOST }}

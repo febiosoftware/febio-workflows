@@ -10,6 +10,10 @@ inputs:
     required: false
     type: boolean
     default: false
+  package-sdk:
+    default: false
+    required: false
+    type: boolean
   shell:
     require: false
     type: string
@@ -49,10 +53,17 @@ runs:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
+    - name: Download SDK
+      if: ${{ inputs.package-sdk == 'true' }}
+      uses: actions/download-artifact@v4
+      with:
+        name: ${{inputs.package-name}}-sdk-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          sdk
     - name: Configure SSH
       shell: ${{inputs.shell}}
       run: |
-        ci/common/linux/configure-ssh.sh
+        ci/common/configure-ssh.sh
       env:
         SSH_USER: ${{ inputs.ssh-user }}
         SSH_KEY: ${{ inputs.ssh-key }}

@@ -27,7 +27,6 @@ runs:
       id: sdk-config
       shell: ${{inputs.shell}}
       run: |
-        echo "version=${{fromJson(inputs.sdk-config).version}}" >> $GITHUB_OUTPUT
         echo "package_branch=${{fromJson(inputs.sdk-config).package_branch}}" >> $GITHUB_OUTPUT
         echo "package_path=${{fromJson(inputs.sdk-config).package_path}}" >> $GITHUB_OUTPUT
         echo "package=${{fromJson(inputs.sdk-config).package}}" >> $GITHUB_OUTPUT
@@ -35,14 +34,13 @@ runs:
     - name: Fetch latest febio-sdk
       shell: ${{inputs.shell}}
       run: |
-        ci/common/linux/get-febio-sdk.sh
+        ci/common/get-febio-sdk.sh
       env:
         OS: ${{inputs.os}}
         PACKAGE_BRANCH: ${{steps.sdk-config.outputs.package_branch}}
         PACKAGE_PATH: ${{steps.sdk-config.outputs.package_path}}
         PACKAGE: ${{steps.sdk-config.outputs.package}}
         BUCKET: ${{steps.sdk-config.outputs.bucket}}
-        VERSION: ${{steps.sdk-config.outputs.version}}
     - name: Extract SDK version
       id: get-version
       shell: bash
