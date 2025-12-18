@@ -77,7 +77,7 @@ jobs:
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Upload plugins 
-        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
+        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@fbs3
         with:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
