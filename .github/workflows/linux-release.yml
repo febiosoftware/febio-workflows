@@ -116,7 +116,7 @@ jobs:
         with:
           fetch-depth: 0
           path: FEBioStudio
-          ref: pluginWorkflows
+          ref: fbs3Workflows
           submodules: 'true'
       - name: Checkout FEBio
         uses: actions/checkout@v4
