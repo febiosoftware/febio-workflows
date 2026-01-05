@@ -123,7 +123,7 @@ jobs:
           fetch-depth: 0
           path: FEBio
           repository: febiosoftware/FEBio
-          ref: workflowtest
+          ref: develop
       - name: Describe FEBio
         uses: febioSoftware/febio-workflows/.github/actions/git-describe@develop
         id: describe_febio
