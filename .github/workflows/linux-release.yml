@@ -116,7 +116,7 @@ jobs:
         with:
           fetch-depth: 0
           path: FEBioStudio
-          ref: fbs3Workflows
+          ref: master
           submodules: 'true'
       - name: Checkout FEBio
         uses: actions/checkout@v4
@@ -124,7 +124,7 @@ jobs:
           fetch-depth: 0
           path: FEBio
           repository: febiosoftware/FEBio
-          ref: develop
+          ref: master
       - name: Describe FEBio
         uses: febioSoftware/febio-workflows/.github/actions/git-describe@develop
         id: describe_febio
@@ -158,7 +158,7 @@ jobs:
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Upload plugins 
-        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@fbs3
+        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
         with:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
