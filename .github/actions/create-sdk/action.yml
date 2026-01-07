@@ -25,7 +25,7 @@ runs:
     - name: Create SDK
       shell: ${{ inputs.shell }}
       env:
-        TARGET_DIR: ${{ inputs.package-name }}-sdk
+        TARGET_DIR: sdk
       run: |
         ci/${{inputs.os}}/create-sdk.sh
     - name: Upload SDK
@@ -33,4 +33,4 @@ runs:
       with:
         name: ${{ inputs.package-name }}-sdk-${{inputs.os}}-${{inputs.arch}}
         path: |
-          ${{ inputs.package-name }}-sdk
+          sdk
