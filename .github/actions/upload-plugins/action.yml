@@ -19,8 +19,6 @@ runs:
         path: common
     - name: Gather plugins
       shell: bash
-      env:
-        FEBIO_SDK: febio4-sdk
       run: |
         if [[ "$RUNNER_OS" == "Windows" ]]; then
           python.exe common/gather-plugins.py
