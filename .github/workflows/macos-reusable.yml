@@ -31,6 +31,10 @@ on:
         default: X64
         required: false
         type: string
+      build-script:
+        default: build.sh
+        required: false
+        type: string
       runTests:
         description: "Run tests?"
         required: false
@@ -93,7 +97,7 @@ jobs:
           requires-sdk: ${{ inputs.requires-sdk }}
           sdk-config: ${{ inputs.sdk-config }}
           package-sdk: ${{ inputs.package-sdk }}
-          script: ci/${{inputs.os}}/build.sh
+          script: ci/${{inputs.os}}/${{inputs.build-script}}
           python-module: ${{ inputs.python-module }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
@@ -155,10 +159,12 @@ jobs:
       - tests
     runs-on: ubuntu-latest
     if: >
-      always() && inputs.publish &&
-      contains(fromJson('["success"]'), needs.build.result) &&
-      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
-      ! github.event.pull_request.head.repo.fork
+      ${{
+        always() && inputs.publish &&
+        contains(fromJson('["success"]'), needs.build.result) &&
+        contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
+        !github.event.pull_request.head.repo.fork
+      }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -187,10 +193,12 @@ jobs:
       - tests
     runs-on: ubuntu-latest
     if: >
-      always() && inputs.publish &&
-      contains(fromJson('["success"]'), needs.build.result) &&
-      contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
-      ! github.event.pull_request.head.repo.fork
+      ${{
+        always() && inputs.publish && !inputs.python-module &&
+        contains(fromJson('["success"]'), needs.build.result) &&
+        contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
+        !github.event.pull_request.head.repo.fork
+      }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4

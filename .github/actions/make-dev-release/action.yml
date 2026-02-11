@@ -6,10 +6,6 @@ inputs:
     required: false
     type: boolean
     default: false
-  python-module:
-    required: false
-    type: boolean
-    default: false
   os:
     required: true
     type: string
@@ -39,14 +35,6 @@ runs:
         name: plugins-${{inputs.os}}-${{inputs.arch}}
         path: |
           plugins
-    - name: Download Python Module
-      uses: actions/download-artifact@v4
-      if: ${{ inputs.python-module == 'true' }}
-      continue-on-error: true
-      with:
-        name: fbs-python-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          pythonModule
     - name: Extract branch name
       shell: bash
       run: |

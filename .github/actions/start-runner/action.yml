@@ -32,7 +32,7 @@ inputs:
     type: string
   aws-instance-type:
     required: false
-    default: c5a.8xlarge
+    default: c7i.8xlarge
     type: string
   aws-availability-zone:
     required: false
@@ -85,4 +85,3 @@ runs:
             {"Key": "GitHubRepository", "Value": "${{ github.repository }}"},
             {"Key": "os", "Value": "${{ inputs.os }}"}
           ]
-

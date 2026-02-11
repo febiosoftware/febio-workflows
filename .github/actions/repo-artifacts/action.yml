@@ -48,6 +48,7 @@ runs:
   using: "composite"
   steps:
     - name: Download build artifacts
+      if: ${{ inputs.python-module == 'false' }}
       uses: actions/download-artifact@v4
       with:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
@@ -94,10 +95,10 @@ runs:
         esac
         echo "os-arg=$OS_ARG" >> $GITHUB_OUTPUT
     - name: Make Dev Release
-      if: ${{ inputs.plugin == 'false' }}
+      if: ${{ inputs.plugin == 'false' && inputs.python-module == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/make-dev-release@develop
       with:
-        runTests: ${{ inputs.runTests }}
+        runTests: ${{ inputs.runTests  == 'true' }}
         python-module: ${{ inputs.python-module }}
         os: ${{ inputs.os }}
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
@@ -109,3 +110,15 @@ runs:
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
         febio-version: ${{ inputs.febio-version }}
         dev-flag: -d
+    - name: Download Python Module
+      uses: actions/download-artifact@v4
+      if: ${{ inputs.python-module == 'true' }}
+      with:
+        name: fbs-python-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          pythonModule
+    - name: Push Python Module
+      if: ${{ inputs.python-module == 'true' }}
+      shell: bash
+      run: |
+        ci/${{inputs.os}}/scp-python-module.sh

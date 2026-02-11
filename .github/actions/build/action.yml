@@ -57,10 +57,11 @@ runs:
     - name: Build
       shell: ${{inputs.shell}}
       env:
-        RUN_POST_BUILD: ${{ inputs.post-build == 'true' }}
+        RUN_POST_BUILD: ${{ inputs.post-build }}
       run: |
         ${{ inputs.script }}
     - name: Upload Artifacts
+      if: ${{ inputs.python-module == 'false' }}
       uses: actions/upload-artifact@v4
       with:
         name: ${{ inputs.package-name }}-${{inputs.os}}-${{inputs.arch}}
@@ -83,7 +84,7 @@ runs:
           ${{ inputs.repo-dir }}/cmbuild/**/FEBioStudioUpdater*
           ${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
     - name: Upload Python Module
-      if: ${{inputs.python-module == 'true'}}
+      if: ${{ inputs.python-module == 'true' }}
       uses: actions/upload-artifact@v4
       with:
         name: fbs-python-${{inputs.os}}-${{inputs.arch}}
