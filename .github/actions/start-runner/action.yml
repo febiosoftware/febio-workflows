@@ -20,7 +20,7 @@ inputs:
   # Used as local variables. Don't need to pass
   register-runner-timeout:
     required: false
-    default: 15
+    default: 8
     type: number
   aws-subnet-id:
     required: false

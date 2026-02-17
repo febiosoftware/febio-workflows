@@ -23,7 +23,7 @@ inputs:
   # Used as local variables. Don't need to pass
   deregister-runner-timeout:
     required: false
-    default: 7
+    default: 3
     type: number
   aws-availability-zone:
     required: false
