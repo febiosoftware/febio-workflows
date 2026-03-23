@@ -46,7 +46,7 @@ runs:
       uses: febiosoftware/febio-workflows/.github/actions/github-token@develop
     
     - name: Stop EC2 runner
-      uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
+      uses: febiosoftware/ec2-multiple-github-runners@main
       with:
         mode: stop
         os: ${{ inputs.os }}

@@ -84,7 +84,7 @@ jobs:
           shell: ${{ inputs.shell }}
       - name: Start EC2 runner
         id: start-ec2-runner
-        uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
+        uses: febiosoftware/ec2-multiple-github-runners@main
         with:
           mode: start
           key-pair: ${{ inputs.key-pair }}
@@ -183,7 +183,7 @@ jobs:
         with:
           shell: ${{ inputs.shell }}
       - name: Stop EC2 runner
-        uses: febiosoftware/ec2-multiple-github-runners@multi-os-multi-runner
+        uses: febiosoftware/ec2-multiple-github-runners@main
         with:
           mode: stop
           os: ${{ inputs.os }}
