@@ -23,7 +23,7 @@ inputs:
     type: string
   git-user-name:
     required: false
-    default: FEBIo Workflow
+    default: FEBio Workflow
     type: string
   git-token:
     required: true
