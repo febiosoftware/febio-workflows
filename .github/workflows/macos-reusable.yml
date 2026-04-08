@@ -73,7 +73,7 @@ on:
 jobs:
   build:
     name: Clone and build
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
     outputs:
       febio-version: ${{ steps.build.outputs.febio-version }}
     steps:
@@ -129,7 +129,7 @@ jobs:
     name: Run test suite
     needs:
       - build
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
