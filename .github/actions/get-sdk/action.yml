@@ -1,20 +1,12 @@
 name: 'Download SDK'
-description: 'Fetches SDK FROM AWS'
+description: 'Fetches SDK From SCI and extracts version information'
 inputs:
-  shell:
-    required: false
-    default: bash
-    type: string
   os:
     required: true
     type: string
   arch:
     required: true
     type: string
-  sdk-config:
-    required: false
-    type: string
-    default: "{ }"
 outputs:
   febio-version:
     value: ${{ steps.get-version.outputs.febio-version }}
@@ -22,25 +14,11 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Get Inputs
-      if: ${{inputs.sdk-config}}
-      id: sdk-config
-      shell: ${{inputs.shell}}
-      run: |
-        echo "package_branch=${{fromJson(inputs.sdk-config).package_branch}}" >> $GITHUB_OUTPUT
-        echo "package_path=${{fromJson(inputs.sdk-config).package_path}}" >> $GITHUB_OUTPUT
-        echo "package=${{fromJson(inputs.sdk-config).package}}" >> $GITHUB_OUTPUT
-        echo "bucket=${{fromJson(inputs.sdk-config).bucket}}" >> $GITHUB_OUTPUT
     - name: Fetch latest febio-sdk
-      shell: ${{inputs.shell}}
+      shell: bash
       run: |
-        ci/common/get-febio-sdk.sh
-      env:
-        OS: ${{inputs.os}}
-        PACKAGE_BRANCH: ${{steps.sdk-config.outputs.package_branch}}
-        PACKAGE_PATH: ${{steps.sdk-config.outputs.package_path}}
-        PACKAGE: ${{steps.sdk-config.outputs.package}}
-        BUCKET: ${{steps.sdk-config.outputs.bucket}}
+        scp shell:/uufs/sci.utah.edu/projects/Weiss/ci/sdk/febio4-sdk-${{inputs.os}}-${{inputs.arch}}.zip ./sdk.zip
+        unzip sdk.zip -d ./febio4-sdk
     - name: Extract SDK version
       id: get-version
       shell: bash

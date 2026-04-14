@@ -31,18 +31,18 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with:
         name: plugins-${{inputs.os}}-${{inputs.arch}}
         path: |
           plugins
     - name: Checkout
-      uses: actions/checkout@v4
+      uses: actions/checkout@v6
       with:
         ref: 'master'
         path: ./TestSuite
@@ -56,7 +56,7 @@ runs:
         ${{ inputs.script }}
     - name: Upload Artifacts
       if: always()
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: testsuite-${{inputs.os}}-${{inputs.arch}}-logs
         path: |

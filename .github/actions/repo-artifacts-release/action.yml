@@ -26,25 +26,17 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with:
         name: ${{inputs.os}}-Release-Artifacts
         path: |
           artifacts
     - name: Download Plugins
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: plugins-${{inputs.os}}-${{inputs.arch}}
         path: |
           plugins
-    - name: Configure SSH
-      shell: bash
-      run: |
-        ci/common/configure-ssh.sh
-      env:
-        SSH_USER: ${{ inputs.ssh-user }}
-        SSH_KEY: ${{ inputs.ssh-key }}
-        SSH_HOST: ${{ inputs.ssh-host }}
     - name: Stage Build to Repo
       shell: bash
       run: |

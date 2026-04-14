@@ -9,9 +9,6 @@ inputs:
     default: febio
     required: false
     type: string
-  script:
-    required: true
-    type: string
   os:
     required: true
     type: string
@@ -29,7 +26,7 @@ runs:
       run: |
         ci/${{inputs.os}}/create-sdk.sh
     - name: Upload SDK
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.package-name }}-sdk-${{inputs.os}}-${{inputs.arch}}
         path: |

@@ -8,17 +8,14 @@ on:
         required: false
         default: bash
         type: string
-      package-sdk:
-        default: false
-        required: false
-        type: boolean
       requires-sdk:
         default: false
         required: false
         type: boolean
-      sdk-config:
+      package-sdk:
+        default: false
         required: false
-        type: string
+        type: boolean
       os:
         default: Linux
         required: false
@@ -30,22 +27,6 @@ on:
       build-script:
         default: build.sh
         required: false
-        type: string
-      aws-ami-id:
-        required: false
-        type: string
-        default: ${{ vars.LINUX_AMI }}
-      aws-region:
-        default: us-east-1
-        required: false
-        type: string
-      aws-role-to-assume:
-        required: false
-        default: arn:aws:iam::353328028284:role/github-actions-runner
-        type: string
-      aws-role-session-name:
-        required: false
-        default: febio-github-actions-runner-session
         type: string
       runTests:
         description: "Run tests?"
@@ -66,42 +47,21 @@ on:
         type: boolean
         default: false
 
-jobs:
-  start-runner:
-    name: Start self-hosted EC2 runner
-    runs-on: ubuntu-latest
-    outputs:
-      label: ${{ steps.start-runner.outputs.label }}
-      ec2-instance-id: ${{ steps.start-runner.outputs.ec2-instance-id }}
-    steps:
-      - name: Start AWS Runner
-        id: start-runner
-        uses: febiosoftware/febio-workflows/.github/actions/start-runner@develop
-        with:
-          os: ${{ inputs.os }}
-          aws-ami-id: ${{ inputs.aws-ami-id }}
-          aws-role-to-assume: ${{ inputs.aws-role-to-assume }}
-          aws-role-session-name: ${{ inputs.aws-role-session-name }}
-          aws-region: ${{ inputs.aws-region }}
+concurrency:
+  group: linux-build
+  cancel-in-progress: false
 
+jobs:
   build:
     name: Clone and build
-    needs:
-      - start-runner # required to get output from the start-runner job
-    runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
+    runs-on: [self-hosted, Linux]
     outputs:
       febio-version: ${{ steps.build.outputs.febio-version }}
     steps:
       - name: Checkout ${{ inputs.package-name }}
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'true'
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ inputs.aws-role-to-assume }}
-          role-session-name: ${{ inputs.aws-role-session-name }}
-          aws-region: ${{ inputs.aws-region }}
       - name: Build ${{ inputs.package-name }}
         id: build
         uses: febiosoftware/febio-workflows/.github/actions/build@develop
@@ -109,7 +69,6 @@ jobs:
           shell: ${{ inputs.shell }}
           package-name: ${{ inputs.package-name }}
           requires-sdk: ${{ inputs.requires-sdk }}
-          sdk-config: ${{ inputs.sdk-config }}
           package-sdk: ${{ inputs.package-sdk }}
           script: ci/${{inputs.os}}/${{inputs.build-script}}
           python-module: ${{ inputs.python-module }}
@@ -143,19 +102,12 @@ jobs:
     name: Run test suite
     needs:
       - build
-      - start-runner # required to get output from the start-runner job
-    runs-on: ${{ needs.start-runner.outputs.label }} # run the job on the newly created runner
+    runs-on: [self-hosted, Linux]
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'true'
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ inputs.aws-role-to-assume }}
-          role-session-name: ${{ inputs.aws-role-session-name }}
-          aws-region: ${{ inputs.aws-region }}
       - name: Tests
         uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
@@ -166,32 +118,12 @@ jobs:
           arch: ${{inputs.arch}}
           git-token: ${{ secrets.TESTSUITE_WRITE }}
 
-  stop-runner:
-    name: Stop self-hosted EC2 runner
-    needs:
-      - start-runner # required to get output from the start-runner job
-      - build
-      - tests # required to wait when the main job is done
-    runs-on: ubuntu-latest
-    if: ${{ always() }} # required to stop the runner even if the error happened in the previous jobs
-    steps:
-      - name: Stop Runner
-        uses: febiosoftware/febio-workflows/.github/actions/stop-runner@develop
-        with:
-          os: ${{ inputs.os }}
-          label: ${{ needs.start-runner.outputs.label }}
-          ec2-instance-id: ${{ needs.start-runner.outputs.ec2-instance-id }}
-          aws-role-to-assume: ${{ inputs.aws-role-to-assume }}
-          aws-role-session-name: ${{ inputs.aws-role-session-name }}
-          aws-region: ${{ inputs.aws-region }}
-
-  # After stop
-  repo-artifacts:
-    name: Upload artifacts to repo
+  publish:
+    name: Publish
     needs:
       - build
       - tests
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, Linux]
     if: >
       ${{
         always() && inputs.publish &&
@@ -200,10 +132,6 @@ jobs:
         !github.event.pull_request.head.repo.fork
       }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: 'true'
       - name: Repo Artifacts
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
@@ -219,36 +147,7 @@ jobs:
           arch: ${{inputs.arch}}
           plugin: ${{inputs.plugin}}
           febio-version: ${{ needs.build.outputs.febio-version }}
-  
-  publish-to-s3:
-    name: Publish to S3
-    needs:
-      - build
-      - tests
-    runs-on: ubuntu-latest
-    if: >
-      ${{
-        always() && inputs.publish && !inputs.python-module &&
-        contains(fromJson('["success"]'), needs.build.result) &&
-        contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
-        !github.event.pull_request.head.repo.fork
-      }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          submodules: 'true'
-      - name: Configure AWS credentials
-        uses: aws-actions/configure-aws-credentials@v4
-        with:
-          role-to-assume: ${{ inputs.aws-role-to-assume }}
-          role-session-name: ${{ inputs.aws-role-session-name }}
-          aws-region: ${{ inputs.aws-region }}
-      - name: Publish To S3
-        uses: febiosoftware/febio-workflows/.github/actions/publish-to-s3@develop
-        with:
-          shell: ${{ inputs.shell }}
-          package-name: ${{ inputs.package-name }}
-          package-sdk: ${{ inputs.package-sdk }}
-          os: ${{inputs.os}}
-          arch: ${{inputs.arch}}
+      - name: Publish SDK
+        if: ${{ inputs.package-sdk }}
+        run: |
+          scp sdk/sdk.zip shell:/uufs/sci.utah.edu/projects/Weiss/ci/sdk/${{ inputs.package-name }}-sdk-${{inputs.os}}-${{inputs.arch}}.zip

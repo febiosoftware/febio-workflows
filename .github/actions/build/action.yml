@@ -19,9 +19,6 @@ inputs:
     default: false
     required: false
     type: boolean
-  sdk-config:
-    required: false
-    type: string
   script:
     required: true
     type: string
@@ -53,7 +50,6 @@ runs:
       with:
         os: ${{inputs.os}}
         arch: ${{inputs.arch}}
-        sdk-config: ${{inputs.sdk-config}}
     - name: Build
       shell: ${{inputs.shell}}
       env:
@@ -62,7 +58,7 @@ runs:
         ${{ inputs.script }}
     - name: Upload Artifacts
       if: ${{ inputs.python-module == 'false' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.package-name }}-${{inputs.os}}-${{inputs.arch}}
         path: |
@@ -77,7 +73,7 @@ runs:
           !${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
     - name: Upload Updater
       if: ${{ inputs.package-name == 'febio-studio' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ inputs.package-name }}-updater-${{inputs.os}}-${{inputs.arch}}
         path: |
@@ -85,7 +81,7 @@ runs:
           ${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
     - name: Upload Python Module
       if: ${{ inputs.python-module == 'true' }}
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: fbs-python-${{inputs.os}}-${{inputs.arch}}
         path: |

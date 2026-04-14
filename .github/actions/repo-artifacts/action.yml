@@ -49,26 +49,18 @@ runs:
   steps:
     - name: Download build artifacts
       if: ${{ inputs.python-module == 'false' }}
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
     - name: Download SDK
       if: ${{ inputs.package-sdk == 'true' }}
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       with:
         name: ${{inputs.package-name}}-sdk-${{inputs.os}}-${{inputs.arch}}
         path: |
           sdk
-    - name: Configure SSH
-      shell: ${{inputs.shell}}
-      run: |
-        ci/common/configure-ssh.sh
-      env:
-        SSH_USER: ${{ inputs.ssh-user }}
-        SSH_KEY: ${{ inputs.ssh-key }}
-        SSH_HOST: ${{ inputs.ssh-host }}
     - name: Get OS Argument
       id: os-argument
       shell: ${{inputs.shell}}
@@ -98,7 +90,7 @@ runs:
       if: ${{ inputs.plugin == 'false' && inputs.python-module == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/make-dev-release@develop
       with:
-        runTests: ${{ inputs.runTests  == 'true' }}
+        runTests: ${{ inputs.runTests == 'true' }}
         os: ${{ inputs.os }}
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
         arch: ${{ inputs.arch }}
@@ -110,7 +102,7 @@ runs:
         febio-version: ${{ inputs.febio-version }}
         dev-flag: -d
     - name: Download Python Module
-      uses: actions/download-artifact@v4
+      uses: actions/download-artifact@v8
       if: ${{ inputs.python-module == 'true' }}
       with:
         name: fbs-python-${{inputs.os}}-${{inputs.arch}}

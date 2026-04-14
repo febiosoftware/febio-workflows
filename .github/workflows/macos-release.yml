@@ -19,22 +19,26 @@ on:
         type: boolean
         default: false
 
+concurrency:
+  group: macos-build
+  cancel-in-progress: false
+
 jobs:
   release:
     name: Release
-    runs-on: self-hosted
+    runs-on: [self-hosted, macOS]
     outputs:
       febio_git_describe: ${{ steps.describe_febio.outputs.git_describe_stripped }}
       fbs_git_describe: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
     steps:
       - name: Checkout FBS
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           path: FEBioStudio
           ref: master
       - name: Checkout FEBio
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           fetch-depth: 0
           path: FEBio
@@ -86,11 +90,11 @@ jobs:
     name: Upload artifacts to repo
     needs:
       - release # required to get output from the start-runner job
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, macOS]
     if: ${{ success() }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
         with:
           submodules: 'true'
       - name: Repo Artifacts
