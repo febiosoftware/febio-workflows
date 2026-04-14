@@ -59,10 +59,10 @@ runs:
       if: ${{ inputs.runTests == 'true' }}
       shell: bash
       run: |
-          if [[ "$OS" == "Windows" ]]; then
-            python.exe common/repo-plugins.py
+          if [[ "$RUNNER_OS" == "Windows" ]]; then
+            python.exe ci/common/repo-plugins.py
           else
-            python3 common/repo-plugins.py
+            python3 ci/common/repo-plugins.py
           fi
       env:
         OS: ${{ inputs.os }}
