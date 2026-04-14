@@ -11,6 +11,9 @@ inputs:
     required: false
     default: 
     type: string
+  path-pattern:
+    required: true
+    type: string
 
 runs:
   using: "composite"
@@ -35,6 +38,6 @@ runs:
 
         ssh repo "mkdir -p /root/pluginRepo/files/$REPO_NAME/develop/stage"
 
-        scp cmbuild/*/*.* repo:/root/pluginRepo/files/$REPO_NAME/develop/stage/
+        scp ${{ inputs.path-pattern }} repo:/root/pluginRepo/files/$REPO_NAME/develop/stage/
         
         ssh repo "python3 /root/modelServer/plugins.py $REPO_NAME $PLUGIN_VERSION $FEBIO_VER $OS_ARG $DEV_FLAG"

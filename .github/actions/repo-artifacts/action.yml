@@ -70,14 +70,17 @@ runs:
 
           macOS)
             OS_ARG="-m"
+            PLUGIN_PATH_PATTERN="cmbuild/lib/*.dylib"
             ;;
 
           Windows)
             OS_ARG="-w"
+            PLUGIN_PATH_PATTERN="cmbuild/Release/*.dll"
             ;;
 
           Linux)
             OS_ARG="-l"
+            PLUGIN_PATH_PATTERN="cmbuild/lib/*.so"
             ;;
 
           *)
@@ -86,6 +89,7 @@ runs:
 
         esac
         echo "os-arg=$OS_ARG" >> $GITHUB_OUTPUT
+        echo "plugin-path-pattern=$PLUGIN_PATH_PATTERN" >> $GITHUB_OUTPUT
     - name: Make Dev Release
       if: ${{ inputs.plugin == 'false' && inputs.python-module == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/make-dev-release@develop
@@ -101,6 +105,7 @@ runs:
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
         febio-version: ${{ inputs.febio-version }}
         dev-flag: -d
+        path-pattern: ${{ steps.os-argument.outputs.plugin-path-pattern }}
     - name: Download Python Module
       uses: actions/download-artifact@v8
       if: ${{ inputs.python-module == 'true' }}
