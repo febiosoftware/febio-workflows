@@ -36,8 +36,8 @@ runs:
         FEBIO_VER=${{ inputs.febio-version }}
         DEV_FLAG=${{ inputs.dev-flag }}
 
-        ssh repo "mkdir -p /root/pluginRepo/files/$REPO_NAME/develop/stage"
+        ssh febio-web "mkdir -p /serverRoot/pluginRepo/files/$REPO_NAME/develop/stage"
 
-        scp ${{ inputs.path-pattern }} repo:/root/pluginRepo/files/$REPO_NAME/develop/stage/
+        scp ${{ inputs.path-pattern }} febio-web:/serverRoot/pluginRepo/files/$REPO_NAME/develop/stage/
         
-        ssh repo "python3 /root/modelServer/plugins.py $REPO_NAME $PLUGIN_VERSION $FEBIO_VER $OS_ARG $DEV_FLAG"
+        ssh febio-web "python3 /serverCode/serverTools/pluginTools.py $REPO_NAME $PLUGIN_VERSION $FEBIO_VER $OS_ARG $DEV_FLAG"
