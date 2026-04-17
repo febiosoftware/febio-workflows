@@ -44,7 +44,7 @@ runs:
     - name: Make Release
       shell: bash
       run: |
-        ssh febio-web "python3 /serverCode/serverTools/makeRelease.py ${{inputs.os}} ${{inputs.febioVer}} ${{inputs.fbsVer}}"
+        ssh repo "python3 /serverCode/serverTools/makeRelease.py ${{inputs.os}} ${{inputs.febioVer}} ${{inputs.fbsVer}}"
     - name: Push and update plugins
       shell: bash
       run: |

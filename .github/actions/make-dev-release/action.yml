@@ -44,7 +44,7 @@ runs:
       shell: bash
       run: |
         BRANCH=${{ steps.extract_branch.outputs.branch }}
-        ssh febio-web "python3 /serverCode/serverTools/prepBranchPaths.py $BRANCH"
+        ssh repo "python3 /serverCode/serverTools/prepBranchPaths.py $BRANCH"
     - name: Stage Build to Repo
       shell: bash
       run: |
@@ -54,7 +54,7 @@ runs:
       run: |
         OS_ARG=${{ inputs.os-arg }}
         BRANCH=${{ steps.extract_branch.outputs.branch }}
-        ssh febio-web "python3 /serverCode/serverTools/makeDevRelease.py $OS_ARG $BRANCH"
+        ssh repo "python3 /serverCode/serverTools/makeDevRelease.py $OS_ARG $BRANCH"
     - name: Push and update plugins
       if: ${{ inputs.runTests == 'true' }}
       shell: bash
