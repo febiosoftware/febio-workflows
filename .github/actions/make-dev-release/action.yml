@@ -19,14 +19,6 @@ inputs:
 runs:
   using: "composite"
   steps:
-    - name: Download test suite logs
-      uses: actions/download-artifact@v8
-      if: ${{ inputs.runTests == 'true' }}
-      continue-on-error: true
-      with:
-        name: testsuite-${{inputs.os}}-${{inputs.arch}}-logs
-        path: |
-          testLogs
     - name: Download Plugins
       uses: actions/download-artifact@v8
       if: ${{ inputs.runTests == 'true' }}
