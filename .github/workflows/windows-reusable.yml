@@ -33,16 +33,22 @@ on:
         required: false
         type: boolean
         default: false
+      publish:
+        required: false
+        type: boolean
+        default: false
+      build-plugins:
+        description: "Build all plugins?"
+        required: false
+        type: boolean
+        default: false
       python-module:
         description: "Compile Python Module?"
         required: false
         type: boolean
         default: false
-      publish:
-        required: false
-        type: boolean
-        default: false
       plugin:
+        description: "Is this a plugin repo?"
         required: false
         type: boolean
         default: false
@@ -75,23 +81,23 @@ jobs:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
       - name: Get plugin repos
-        if: inputs.runTests
+        if: inputs.build-plugins
         id: get-plugin-repos
         uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout plugin repos
-        if: inputs.runTests
+        if: inputs.build-plugins
         uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Build plugins
-        if: inputs.runTests 
+        if: inputs.build-plugins
         uses: febiosoftware/febio-workflows/.github/actions/build-plugins@develop
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Upload plugins 
-        if: inputs.runTests
+        if: inputs.build-plugins
         uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
         with:
           os: ${{inputs.os}}
@@ -136,12 +142,9 @@ jobs:
       - name: Repo Artifacts
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
-          runTests: ${{ inputs.runTests }}
+          build-plugins: ${{ inputs.build-plugins }}
           python-module: ${{ inputs.python-module }}
           package-sdk: ${{ inputs.package-sdk }}
-          ssh-user: ${{ secrets.SSH_USER }}
-          ssh-key: ${{ secrets.SSH_KEY }}
-          ssh-host: ${{ secrets.SSH_HOST }}
           shell: ${{ inputs.shell }}
           package-name: ${{ inputs.package-name }}
           os: ${{inputs.os}}

@@ -1,11 +1,6 @@
 name: 'Upload '
 description: 'Creates SDK and Uploads artifacts'
 inputs:
-  runTests:
-    description: "Run tests?"
-    required: false
-    type: boolean
-    default: false
   python-module:
     required: false
     type: boolean
@@ -34,15 +29,10 @@ inputs:
   arch:
     required: true
     type: string
-  ssh-user:
-    required: true
-    type: string
-  ssh-key:
-    required: true
-    type: string
-  ssh-host:
-    required: true
-    type: string
+  build-plugins:
+    required: false
+    type: boolean
+    default: false
 
 runs:
   using: "composite"
@@ -94,10 +84,10 @@ runs:
       if: ${{ inputs.plugin == 'false' && inputs.python-module == 'false' }}
       uses: febiosoftware/febio-workflows/.github/actions/make-dev-release@develop
       with:
-        runTests: ${{ inputs.runTests == 'true' }}
         os: ${{ inputs.os }}
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
         arch: ${{ inputs.arch }}
+        build-plugins: ${{ inputs.build-plugins }}
     - name: Make Plugin Release
       if: ${{ inputs.plugin == 'true' }}
       uses: febiosoftware/febio-workflows/.github/actions/make-plugin-release@develop

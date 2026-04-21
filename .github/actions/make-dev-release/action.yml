@@ -1,11 +1,6 @@
 name: 'Make Dev Release '
 description: 'Uploads artifacts and makes dev release'
 inputs:
-  runTests:
-    description: "Run tests?"
-    required: false
-    type: boolean
-    default: false
   os:
     required: true
     type: string
@@ -15,18 +10,14 @@ inputs:
   arch:
     required: true
     type: string
+  build-plugins:
+    required: false
+    type: boolean
+    default: false
 
 runs:
   using: "composite"
   steps:
-    - name: Download Plugins
-      uses: actions/download-artifact@v8
-      if: ${{ inputs.runTests == 'true' }}
-      continue-on-error: true
-      with:
-        name: plugins-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          plugins
     - name: Extract branch name
       shell: bash
       run: |
@@ -47,8 +38,15 @@ runs:
         OS_ARG=${{ inputs.os-arg }}
         BRANCH=${{ steps.extract_branch.outputs.branch }}
         ssh repo "python3 /serverCode/serverTools/makeDevRelease.py $OS_ARG $BRANCH"
+    - name: Download Plugins
+      uses: actions/download-artifact@v8
+      if: ${{ inputs.build-plugins == 'true' }}
+      with:
+        name: plugins-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          plugins
     - name: Push and update plugins
-      if: ${{ inputs.runTests == 'true' && steps.extract_branch.outputs.branch == 'develop' }}
+      if: ${{ inputs.build-plugins == 'true' && steps.extract_branch.outputs.branch == 'develop' }}
       shell: bash
       run: |
           if [[ "$RUNNER_OS" == "Windows" ]]; then
