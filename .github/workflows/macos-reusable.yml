@@ -81,7 +81,7 @@ jobs:
           submodules: true
       - name: Build
         id: build
-        uses: febiosoftware/febio-workflows/.github/actions/build@test
+        uses: febiosoftware/febio-workflows/.github/actions/build@develop
         with:
           post-build: ${{ inputs.post-build }}
           shell: ${{ inputs.shell }}
@@ -95,22 +95,22 @@ jobs:
       - name: Get plugin repos
         if: inputs.build-plugins
         id: get-plugin-repos
-        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@test
+        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout plugin repos
         if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@test
+        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Build plugins
         if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@test
+        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@develop
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Upload plugins 
         if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@test
+        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
         with:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
@@ -128,7 +128,7 @@ jobs:
           fetch-depth: 1
           submodules: true
       - name: Tests
-        uses: febiosoftware/febio-workflows/.github/actions/run-tests@test
+        uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
         with:
           script: ci/${{inputs.os}}/test.sh
           shell: ${{ inputs.shell }}
@@ -154,7 +154,7 @@ jobs:
       }}
     steps:
       - name: Repo Artifacts
-        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@test
+        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
           build-plugins: ${{ inputs.build-plugins }}
           python-module: ${{ inputs.python-module }}

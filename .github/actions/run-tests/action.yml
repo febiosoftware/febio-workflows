@@ -58,13 +58,13 @@ runs:
     - name: Get plugin repos
       if: ${{ inputs.build-plugins == 'true' }}
       id: get-plugin-repos
-      uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@test
+      uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
       with:
         github_token: ${{ inputs.git-token }}
     - name: Checkout plugin repos
       if: ${{ inputs.build-plugins == 'true' }}
       id: checkout-plugin-repos
-      uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@test
+      uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
       with:
         repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
     - name: Run test suite

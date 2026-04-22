@@ -40,19 +40,19 @@ jobs:
           repository: febiosoftware/FEBio
           ref: master
       - name: Describe FEBio
-        uses: febioSoftware/febio-workflows/.github/actions/git-describe@test
+        uses: febioSoftware/febio-workflows/.github/actions/git-describe@develop
         id: describe_febio
         with:
           shell: bash
           path: FEBio
       - name: Describe FBS
-        uses: febioSoftware/febio-workflows/.github/actions/git-describe@test
+        uses: febioSoftware/febio-workflows/.github/actions/git-describe@develop
         id: describe_fbs
         with:
           shell: bash
           path: FEBioStudio
       - name: Release
-        uses: febiosoftware/febio-workflows/.github/actions/release@test
+        uses: febiosoftware/febio-workflows/.github/actions/release@develop
         with:
           febioVer: ${{ steps.describe_febio.outputs.git_describe_stripped }}
           fbsVer: ${{ steps.describe_fbs.outputs.git_describe_stripped }}
@@ -62,19 +62,19 @@ jobs:
           ib_license_contents: ${{ secrets.INSTALL_BUILDER_LICENSE }}
       - name: Get plugin repos
         id: get-plugin-repos
-        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@test
+        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout plugin repos
-        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@test
+        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Build plugins
-        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@test
+        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@develop
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Upload plugins 
-        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@test
+        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
         with:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
@@ -91,7 +91,7 @@ jobs:
         with:
           submodules: 'true'
       - name: Repo Artifacts
-        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts-release@test
+        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts-release@develop
         with:
           ssh-user: ${{ secrets.SSH_USER }}
           ssh-key: ${{ secrets.SSH_KEY }}
