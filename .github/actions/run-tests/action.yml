@@ -17,6 +17,9 @@ inputs:
   script:
     required: true
     type: string
+  build-plugins:
+    required: true
+    type: boolean
   git-user-email:
     required: false
     default: workflow@febio.org
@@ -24,6 +27,9 @@ inputs:
   git-user-name:
     required: false
     default: FEBio Workflow
+    type: string
+  git-test-suite-token:
+    required: true
     type: string
   git-token:
     required: true
@@ -36,24 +42,39 @@ runs:
         name: ${{inputs.package-name}}-${{inputs.os}}-${{inputs.arch}}
         path: |
           cmbuild
-    - uses: actions/download-artifact@v8
-      with:
-        name: plugins-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          plugins
     - name: Checkout
       uses: actions/checkout@v6
       with:
         ref: 'master'
         path: ./TestSuite
         repository: febiosoftware/TestSuite
-        token: ${{inputs.git-token}}
+        token: ${{inputs.git-test-suite-token}}
+    - uses: actions/download-artifact@v8
+      if: ${{ inputs.build-plugins == 'true' }}
+      with:
+        name: plugins-${{inputs.os}}-${{inputs.arch}}
+        path: |
+          plugins
+    - name: Get plugin repos
+      if: ${{ inputs.build-plugins == 'true' }}
+      id: get-plugin-repos
+      uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@test
+      with:
+        github_token: ${{ inputs.git-token }}
+    - name: Checkout plugin repos
+      if: ${{ inputs.build-plugins == 'true' }}
+      id: checkout-plugin-repos
+      uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@test
+      with:
+        repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
     - name: Run test suite
       shell: ${{inputs.shell}}
       run: |
         git config user.email "${{ inputs.git-user-email }}"
         git config user.name "${{ inputs.git-user-name }}"
         ${{ inputs.script }}
+      env:
+        PLUGIN_DIRS: ${{ steps.checkout-plugin-repos.outputs.plugin_dirs || '' }}
     - name: Upload Artifacts
       if: always()
       uses: actions/upload-artifact@v7

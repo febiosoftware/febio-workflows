@@ -81,7 +81,7 @@ jobs:
           submodules: true
       - name: Build
         id: build
-        uses: febiosoftware/febio-workflows/.github/actions/build@develop
+        uses: febiosoftware/febio-workflows/.github/actions/build@test
         with:
           post-build: ${{ inputs.post-build }}
           shell: ${{ inputs.shell }}
@@ -95,22 +95,22 @@ jobs:
       - name: Get plugin repos
         if: inputs.build-plugins
         id: get-plugin-repos
-        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
+        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@test
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
       - name: Checkout plugin repos
         if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
+        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@test
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Build plugins
         if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@develop
+        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@test
         with:
           repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
       - name: Upload plugins 
         if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
+        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@test
         with:
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
@@ -128,14 +128,16 @@ jobs:
           fetch-depth: 1
           submodules: true
       - name: Tests
-        uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
+        uses: febiosoftware/febio-workflows/.github/actions/run-tests@test
         with:
           script: ci/${{inputs.os}}/test.sh
           shell: ${{ inputs.shell }}
           package-name: ${{ inputs.package-name }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
-          git-token: ${{ secrets.TESTSUITE_WRITE }}
+          build-plugins: ${{ inputs.build-plugins }}
+          git-test-suite-token: ${{ secrets.TESTSUITE_WRITE }}
+          git-token: ${{ secrets.GITHUB_TOKEN }}
   
   publish:
     name: Publish
@@ -152,7 +154,7 @@ jobs:
       }}
     steps:
       - name: Repo Artifacts
-        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
+        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@test
         with:
           build-plugins: ${{ inputs.build-plugins }}
           python-module: ${{ inputs.python-module }}

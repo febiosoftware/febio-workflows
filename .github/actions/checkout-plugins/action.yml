@@ -4,23 +4,32 @@ inputs:
   repo_list:
     required: true
     type: string
+outputs:
+  plugin_dirs:
+    value: ${{ steps.checkout-plugin-repos.outputs.plugin_dirs }}
 
 runs:
   using: "composite"
   steps:
     - name: Checkout plugin repos
+      id: checkout-plugin-repos
       shell: bash
       run: |
         mkdir pluginRepos
         pushd pluginRepos
+
+        PLUGIN_DIRS=""
 
         echo "Checking out repos: $REPO_LIST"
         IFS=',' read -ra REPOS <<< "$REPO_LIST"
         for repo in "${REPOS[@]}"; do
           echo "Checking out $repo..."
           git clone "https://github.com/febiosoftware/$repo.git"
+          PLUGIN_DIRS="$PLUGIN_DIRS $(realpath ./$repo)"
         done
 
         popd 
+
+        echo "plugin_dirs=$PLUGIN_DIRS" >> "$GITHUB_OUTPUT"
       env:
         REPO_LIST: ${{ inputs.repo_list }}

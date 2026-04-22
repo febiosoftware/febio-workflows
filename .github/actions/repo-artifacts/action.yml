@@ -82,7 +82,7 @@ runs:
         echo "plugin-path-pattern=$PLUGIN_PATH_PATTERN" >> $GITHUB_OUTPUT
     - name: Make Dev Release
       if: ${{ inputs.plugin == 'false' && inputs.python-module == 'false' }}
-      uses: febiosoftware/febio-workflows/.github/actions/make-dev-release@develop
+      uses: febiosoftware/febio-workflows/.github/actions/make-dev-release@test
       with:
         os: ${{ inputs.os }}
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
@@ -90,7 +90,7 @@ runs:
         build-plugins: ${{ inputs.build-plugins }}
     - name: Make Plugin Release
       if: ${{ inputs.plugin == 'true' }}
-      uses: febiosoftware/febio-workflows/.github/actions/make-plugin-release@develop
+      uses: febiosoftware/febio-workflows/.github/actions/make-plugin-release@test
       with:
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
         febio-version: ${{ inputs.febio-version }}

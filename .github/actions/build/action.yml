@@ -46,7 +46,7 @@ runs:
     - name: Get SDK
       id: get-sdk
       if: ${{ inputs.requires-sdk == 'true' && inputs.package-sdk == 'false' }}
-      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@test
       with:
         os: ${{inputs.os}}
         arch: ${{inputs.arch}}
@@ -90,7 +90,7 @@ runs:
           ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.pyd
     - name: Create and upload SDK
       if: ${{ inputs.package-sdk == 'true' && inputs.requires-sdk == 'false' }}
-      uses: febiosoftware/febio-workflows/.github/actions/create-sdk@develop
+      uses: febiosoftware/febio-workflows/.github/actions/create-sdk@test
       with:
         package-name: ${{ inputs.package-name }}
         os: ${{inputs.os}}
