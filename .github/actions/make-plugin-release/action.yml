@@ -22,7 +22,7 @@ runs:
       shell: bash
       run: |
         # find the version.h file
-        VERSION_H=$(find . -type f -name "version.h" -print -quit)
+        VERSION_H=$(find . -path "./febio4-sdk" -prune -o -type f -name "version.h" -print -quit)
         VERSION_H=$(realpath "$VERSION_H")
 
         # extract the version 
