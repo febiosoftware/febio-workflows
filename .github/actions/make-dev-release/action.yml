@@ -14,6 +14,10 @@ inputs:
     required: false
     type: boolean
     default: false
+  dev-release:
+    required: false
+    type: boolean
+    default: false
 
 runs:
   using: "composite"
@@ -34,6 +38,7 @@ runs:
         ci/${{inputs.os}}/scp-to-repo.sh ${{ steps.extract_branch.outputs.branch }}
     - name: Make Dev Release
       shell: bash
+      if: ${{ inputs.dev-release == 'true' }}
       run: |
         OS_ARG=${{ inputs.os-arg }}
         BRANCH=${{ steps.extract_branch.outputs.branch }}
