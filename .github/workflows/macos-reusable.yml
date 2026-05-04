@@ -49,6 +49,11 @@ on:
         required: false
         type: boolean
         default: false
+      dev-release:
+        description: "Make a dev release?"
+        required: false
+        type: boolean
+        default: true
       python-module:
         description: "Compile Python Module?"
         required: false
@@ -157,6 +162,7 @@ jobs:
         uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
         with:
           build-plugins: ${{ inputs.build-plugins }}
+          dev-release: ${{ inputs.dev-release }}
           python-module: ${{ inputs.python-module }}
           package-sdk: ${{ inputs.package-sdk }}
           shell: ${{ inputs.shell }}

@@ -33,6 +33,10 @@ inputs:
     required: false
     type: boolean
     default: false
+  dev-release:
+    required: false
+    type: boolean
+    default: true
 
 runs:
   using: "composite"
@@ -88,6 +92,7 @@ runs:
         os-arg: ${{ steps.os-argument.outputs.os-arg }}
         arch: ${{ inputs.arch }}
         build-plugins: ${{ inputs.build-plugins }}
+        dev-release: ${{ inputs.dev-release }}
     - name: Make Plugin Release
       if: ${{ inputs.plugin == 'true' }}
       uses: febiosoftware/febio-workflows/.github/actions/make-plugin-release@develop
