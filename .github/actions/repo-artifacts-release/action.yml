@@ -48,7 +48,7 @@ runs:
     - name: Push and update plugins
       shell: bash
       run: |
-          python3 ci/common/repo-plugins.py
+          python ci/common/repo-plugins.py
       env:
         OS: ${{ inputs.os }}
         DEV_RELEASE: 0
