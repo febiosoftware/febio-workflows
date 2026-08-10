@@ -45,6 +45,9 @@ inputs:
   macos_keychain_password:
     required: true
     type: string
+  macos_sign:
+    required: true
+    type: string
 outputs:
   febio-version:
     value: ${{ steps.get-sdk.outputs.febio-version }}
@@ -66,6 +69,7 @@ runs:
         MACOS_KEYCHAIN: ${{ inputs.macos_keychain }}
         MACOS_KEYCHAIN_PASSWORD: ${{ inputs.macos_keychain_password }}
         P12_PASSWORD: ${{ inputs.macos_pkcs12_pswd }}
+        MACOS_SIGN: ${{ inputs.macos_sign }}
       run: |
         ${{ inputs.script }}
     - name: Upload Artifacts

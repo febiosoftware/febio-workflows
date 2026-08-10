@@ -100,6 +100,7 @@ jobs:
           macos_pkcs12_pswd: ${{ secrets.MACOS_PKCS12_PSWD }}
           macos_keychain: ${{ secrets.MACOS_KEYCHAIN }}
           macos_keychain_password: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
+          macos_sign: ${{ secrets.MACOS_SIGN }} 
       - name: Get plugin repos
         if: inputs.build-plugins
         id: get-plugin-repos
