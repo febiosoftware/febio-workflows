@@ -86,7 +86,7 @@ jobs:
           submodules: true
       - name: Build
         id: build
-        uses: febiosoftware/febio-workflows/.github/actions/build@develop
+        uses: febiosoftware/febio-workflows/.github/actions/build@certTest
         with:
           post-build: ${{ inputs.post-build }}
           shell: ${{ inputs.shell }}
@@ -97,6 +97,9 @@ jobs:
           python-module: ${{ inputs.python-module }}
           os: ${{inputs.os}}
           arch: ${{inputs.arch}}
+          macos_pkcs12_pswd: ${{ secrets.MACOS_PKCS12_PSWD }}
+          macos_keychain: ${{ secrets.MACOS_KEYCHAIN }}
+          macos_keychain_password: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
       - name: Get plugin repos
         if: inputs.build-plugins
         id: get-plugin-repos

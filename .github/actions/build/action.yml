@@ -36,6 +36,15 @@ inputs:
   arch:
     required: true
     type: string
+  macos_pkcs12_pswd:
+    required: true
+    type: string
+  macos_keychain:
+    required: true
+    type: string
+  macos_keychain_password:
+    required: true
+    type: string
 outputs:
   febio-version:
     value: ${{ steps.get-sdk.outputs.febio-version }}
@@ -54,6 +63,9 @@ runs:
       shell: ${{inputs.shell}}
       env:
         RUN_POST_BUILD: ${{ inputs.post-build }}
+        MACOS_KEYCHAIN: ${{ inputs.macos_keychain }}
+        MACOS_KEYCHAIN_PASSWORD: ${{ inputs.macos_keychain_password }}
+        P12_PASSWORD: ${{ inputs.macos_pkcs12_pswd }}
       run: |
         ${{ inputs.script }}
     - name: Upload Artifacts
