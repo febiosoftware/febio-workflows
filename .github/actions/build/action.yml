@@ -55,13 +55,13 @@ outputs:
 runs:
   using: "composite"
   steps:
-    - name: Get SDK
-      id: get-sdk
-      if: ${{ inputs.requires-sdk == 'true' && inputs.package-sdk == 'false' }}
-      uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
-      with:
-        os: ${{inputs.os}}
-        arch: ${{inputs.arch}}
+    # - name: Get SDK
+    #   id: get-sdk
+    #   if: ${{ inputs.requires-sdk == 'true' && inputs.package-sdk == 'false' }}
+    #   uses: febiosoftware/febio-workflows/.github/actions/get-sdk@develop
+    #   with:
+    #     os: ${{inputs.os}}
+    #     arch: ${{inputs.arch}}
     - name: Build
       shell: ${{inputs.shell}}
       env:
@@ -72,42 +72,42 @@ runs:
         MACOS_SIGN: ${{ inputs.macos_sign }}
       run: |
         ${{ inputs.script }}
-    - name: Upload Artifacts
-      if: ${{ inputs.python-module == 'false' }}
-      uses: actions/upload-artifact@v7
-      with:
-        name: ${{ inputs.package-name }}-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          ${{ inputs.repo-dir }}/cmbuild/Release
-          ${{ inputs.repo-dir }}/cmbuild/bin
-          ${{ inputs.repo-dir }}/cmbuild/lib
-          !${{ inputs.repo-dir }}/cmbuild/lib/*.a
-          !${{ inputs.repo-dir }}/cmbuild/**/*.lib
-          !${{ inputs.repo-dir }}/cmbuild/**/*.exp
-          !${{ inputs.repo-dir }}/cmbuild/**/*.xml
-          !${{ inputs.repo-dir }}/cmbuild/**/*Updater*
-          !${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
-    - name: Upload Updater
-      if: ${{ inputs.package-name == 'febio-studio' }}
-      uses: actions/upload-artifact@v7
-      with:
-        name: ${{ inputs.package-name }}-updater-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          ${{ inputs.repo-dir }}/cmbuild/**/FEBioStudioUpdater*
-          ${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
-    - name: Upload Python Module
-      if: ${{ inputs.python-module == 'true' }}
-      uses: actions/upload-artifact@v7
-      with:
-        name: fbs-python-${{inputs.os}}-${{inputs.arch}}
-        path: |
-          ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.so
-          ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.dylib
-          ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.pyd
-    - name: Create and upload SDK
-      if: ${{ inputs.package-sdk == 'true' && inputs.requires-sdk == 'false' }}
-      uses: febiosoftware/febio-workflows/.github/actions/create-sdk@develop
-      with:
-        package-name: ${{ inputs.package-name }}
-        os: ${{inputs.os}}
-        arch: ${{inputs.arch}}
+    # - name: Upload Artifacts
+    #   if: ${{ inputs.python-module == 'false' }}
+    #   uses: actions/upload-artifact@v7
+    #   with:
+    #     name: ${{ inputs.package-name }}-${{inputs.os}}-${{inputs.arch}}
+    #     path: |
+    #       ${{ inputs.repo-dir }}/cmbuild/Release
+    #       ${{ inputs.repo-dir }}/cmbuild/bin
+    #       ${{ inputs.repo-dir }}/cmbuild/lib
+    #       !${{ inputs.repo-dir }}/cmbuild/lib/*.a
+    #       !${{ inputs.repo-dir }}/cmbuild/**/*.lib
+    #       !${{ inputs.repo-dir }}/cmbuild/**/*.exp
+    #       !${{ inputs.repo-dir }}/cmbuild/**/*.xml
+    #       !${{ inputs.repo-dir }}/cmbuild/**/*Updater*
+    #       !${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
+    # - name: Upload Updater
+    #   if: ${{ inputs.package-name == 'febio-studio' }}
+    #   uses: actions/upload-artifact@v7
+    #   with:
+    #     name: ${{ inputs.package-name }}-updater-${{inputs.os}}-${{inputs.arch}}
+    #     path: |
+    #       ${{ inputs.repo-dir }}/cmbuild/**/FEBioStudioUpdater*
+    #       ${{ inputs.repo-dir }}/cmbuild/**/mvUtil*
+    # - name: Upload Python Module
+    #   if: ${{ inputs.python-module == 'true' }}
+    #   uses: actions/upload-artifact@v7
+    #   with:
+    #     name: fbs-python-${{inputs.os}}-${{inputs.arch}}
+    #     path: |
+    #       ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.so
+    #       ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.dylib
+    #       ${{ inputs.repo-dir }}/PyLib/cmbuild/**/*.pyd
+    # - name: Create and upload SDK
+    #   if: ${{ inputs.package-sdk == 'true' && inputs.requires-sdk == 'false' }}
+    #   uses: febiosoftware/febio-workflows/.github/actions/create-sdk@develop
+    #   with:
+    #     package-name: ${{ inputs.package-name }}
+    #     os: ${{inputs.os}}
+    #     arch: ${{inputs.arch}}
