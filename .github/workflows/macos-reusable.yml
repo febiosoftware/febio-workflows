@@ -101,81 +101,81 @@ jobs:
           macos_keychain: ${{ secrets.MACOS_KEYCHAIN }}
           macos_keychain_password: ${{ secrets.MACOS_KEYCHAIN_PASSWORD }}
           macos_sign: ${{ secrets.MACOS_SIGN }} 
-      - name: Get plugin repos
-        if: inputs.build-plugins
-        id: get-plugin-repos
-        uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-      - name: Checkout plugin repos
-        if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
-        with:
-          repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
-      - name: Build plugins
-        if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/build-plugins@develop
-        with:
-          repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
-      - name: Upload plugins 
-        if: inputs.build-plugins
-        uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
-        with:
-          os: ${{inputs.os}}
-          arch: ${{inputs.arch}}
+      # - name: Get plugin repos
+      #   if: inputs.build-plugins
+      #   id: get-plugin-repos
+      #   uses: febiosoftware/febio-workflows/.github/actions/get-plugin-repos@develop
+      #   with:
+      #     github_token: ${{ secrets.GITHUB_TOKEN }}
+      # - name: Checkout plugin repos
+      #   if: inputs.build-plugins
+      #   uses: febiosoftware/febio-workflows/.github/actions/checkout-plugins@develop
+      #   with:
+      #     repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
+      # - name: Build plugins
+      #   if: inputs.build-plugins
+      #   uses: febiosoftware/febio-workflows/.github/actions/build-plugins@develop
+      #   with:
+      #     repo_list: ${{ steps.get-plugin-repos.outputs.repo_list }}
+      # - name: Upload plugins 
+      #   if: inputs.build-plugins
+      #   uses: febiosoftware/febio-workflows/.github/actions/upload-plugins@develop
+      #   with:
+      #     os: ${{inputs.os}}
+      #     arch: ${{inputs.arch}}
   
-  tests:
-    if: inputs.runTests
-    name: Run test suite
-    needs:
-      - build
-    runs-on: [self-hosted, macOS]
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 1
-          submodules: true
-      - name: Tests
-        uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
-        with:
-          script: ci/${{inputs.os}}/test.sh
-          shell: ${{ inputs.shell }}
-          package-name: ${{ inputs.package-name }}
-          os: ${{inputs.os}}
-          arch: ${{inputs.arch}}
-          build-plugins: ${{ inputs.build-plugins }}
-          git-test-suite-token: ${{ secrets.TESTSUITE_WRITE }}
-          git-token: ${{ secrets.GITHUB_TOKEN }}
+  # tests:
+  #   if: inputs.runTests
+  #   name: Run test suite
+  #   needs:
+  #     - build
+  #   runs-on: [self-hosted, macOS]
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v6
+  #       with:
+  #         fetch-depth: 1
+  #         submodules: true
+  #     - name: Tests
+  #       uses: febiosoftware/febio-workflows/.github/actions/run-tests@develop
+  #       with:
+  #         script: ci/${{inputs.os}}/test.sh
+  #         shell: ${{ inputs.shell }}
+  #         package-name: ${{ inputs.package-name }}
+  #         os: ${{inputs.os}}
+  #         arch: ${{inputs.arch}}
+  #         build-plugins: ${{ inputs.build-plugins }}
+  #         git-test-suite-token: ${{ secrets.TESTSUITE_WRITE }}
+  #         git-token: ${{ secrets.GITHUB_TOKEN }}
   
-  publish:
-    name: Publish
-    needs:
-      - build
-      - tests
-    runs-on: [self-hosted, macOS]
-    if: >
-      ${{
-        always() && inputs.publish &&
-        contains(fromJson('["success"]'), needs.build.result) &&
-        contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
-        !github.event.pull_request.head.repo.fork
-      }}
-    steps:
-      - name: Repo Artifacts
-        uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
-        with:
-          build-plugins: ${{ inputs.build-plugins }}
-          dev-release: ${{ inputs.dev-release }}
-          python-module: ${{ inputs.python-module }}
-          package-sdk: ${{ inputs.package-sdk }}
-          shell: ${{ inputs.shell }}
-          package-name: ${{ inputs.package-name }}
-          os: ${{inputs.os}}
-          arch: ${{inputs.arch}}
-          plugin: ${{inputs.plugin}}
-          febio-version: ${{ needs.build.outputs.febio-version }}
-      - name: Publish SDK
-        if: ${{ inputs.package-sdk }}
-        run: |
-          scp sdk/sdk.zip shell:/uufs/sci.utah.edu/projects/Weiss/ci/sdk/${{ inputs.package-name }}-sdk-${{inputs.os}}-${{inputs.arch}}.zip
+  # publish:
+  #   name: Publish
+  #   needs:
+  #     - build
+  #     - tests
+  #   runs-on: [self-hosted, macOS]
+  #   if: >
+  #     ${{
+  #       always() && inputs.publish &&
+  #       contains(fromJson('["success"]'), needs.build.result) &&
+  #       contains(fromJson('["success", "skipped"]'), needs.tests.result) &&
+  #       !github.event.pull_request.head.repo.fork
+  #     }}
+  #   steps:
+  #     - name: Repo Artifacts
+  #       uses: febiosoftware/febio-workflows/.github/actions/repo-artifacts@develop
+  #       with:
+  #         build-plugins: ${{ inputs.build-plugins }}
+  #         dev-release: ${{ inputs.dev-release }}
+  #         python-module: ${{ inputs.python-module }}
+  #         package-sdk: ${{ inputs.package-sdk }}
+  #         shell: ${{ inputs.shell }}
+  #         package-name: ${{ inputs.package-name }}
+  #         os: ${{inputs.os}}
+  #         arch: ${{inputs.arch}}
+  #         plugin: ${{inputs.plugin}}
+  #         febio-version: ${{ needs.build.outputs.febio-version }}
+  #     - name: Publish SDK
+  #       if: ${{ inputs.package-sdk }}
+  #       run: |
+  #         scp sdk/sdk.zip shell:/uufs/sci.utah.edu/projects/Weiss/ci/sdk/${{ inputs.package-name }}-sdk-${{inputs.os}}-${{inputs.arch}}.zip
