@@ -48,7 +48,11 @@ runs:
     - name: Push and update plugins
       shell: bash
       run: |
-          python ci/common/repo-plugins.py
+        if [[ "$RUNNER_OS" == "Windows" ]]; then
+          python.exe ci/common/repo-plugins.py
+        else
+          python3 ci/common/repo-plugins.py
+        fi
       env:
         OS: ${{ inputs.os }}
         DEV_RELEASE: 0
