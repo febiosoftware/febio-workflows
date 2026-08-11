@@ -80,10 +80,10 @@ jobs:
     outputs:
       febio-version: ${{ steps.build.outputs.febio-version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          submodules: true
+      # - name: Checkout
+      #   uses: actions/checkout@v6
+      #   with:
+      #     submodules: true
       - name: Build
         id: build
         uses: febiosoftware/febio-workflows/.github/actions/build@certTest

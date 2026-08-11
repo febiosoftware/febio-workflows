@@ -65,13 +65,35 @@ runs:
     - name: Build
       shell: bash
       run: |
+
+        echo "Import key"
+        security import /Users/GitRunner/osx_app_signing.p12 \
+          -k "$MACOS_KEYCHAIN" \
+          -P "$P12_PASSWORD" \
+          -T /usr/bin/codesign
+
+        echo -e "\n\nSet key partition list"
+        security set-key-partition-list \
+          -S apple-tool:,apple:,codesign: \
+          -s \
+          -k "$MACOS_KEYCHAIN_PASSWORD" \
+          "$MACOS_KEYCHAIN"
+        
+        echo -e "\n\nUnlock keychain"
         security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$MACOS_KEYCHAIN"
 
-        echo "List of keychains:"
-        security list-keychains -d user
+        echo -e "\n\nAttempt to sign test binary"
+        cp /bin/echo ./sign-test
 
-        echo -e "\n\nDefault keychain:"
-        security default-keychain -d user
+        codesign --force --verbose=4 \
+          --sign "$MACOS_SIGN" \
+          ./sign-test
+
+        # echo "List of keychains:"
+        # security list-keychains -d user
+
+        # echo -e "\n\nDefault keychain:"
+        # security default-keychain -d user
 
         # echo -e "\n\nDev ID Cert Auth:"
         # security find-certificate -a -c "Developer ID Certification Authority" -Z
@@ -87,7 +109,7 @@ runs:
         #   -Z \
         #   /System/Library/Keychains/SystemRootCertificates.keychain || true
 
-        security find-identity -v -p codesigning "$MACOS_KEYCHAIN"
+        # security find-identity -v -p codesigning "$MACOS_KEYCHAIN"
 
         # security find-certificate \
         #   -c "Developer ID Application" \
