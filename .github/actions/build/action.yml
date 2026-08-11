@@ -63,15 +63,45 @@ runs:
     #     os: ${{inputs.os}}
     #     arch: ${{inputs.arch}}
     - name: Build
-      shell: ${{inputs.shell}}
+      shell: bash
+      run: |
+        security unlock-keychain -p "$MACOS_KEYCHAIN_PASSWORD" "$MACOS_KEYCHAIN"
+
+        # echo "List of keychains:"
+        # security list-keychains -d user
+
+        # echo -e "\n\nDefault keychain:"
+        # security default-keychain -d user
+
+        # echo -e "\n\nDev ID Cert Auth:"
+        # security find-certificate -a -c "Developer ID Certification Authority" -Z
+
+        # echo -e "\n\nApple root:"
+        # security find-certificate -a \
+        #   -c "Apple Root CA" \
+        #   -Z
+
+        # echo -e "\n\nSystem root store:"
+        # security find-certificate \
+        #   -c "Apple Root CA" \
+        #   -Z \
+        #   /System/Library/Keychains/SystemRootCertificates.keychain || true
+
+        security find-identity -v -p codesigning "$MACOS_KEYCHAIN"
+
+        # security find-certificate \
+        #   -c "Developer ID Application" \
+        #   -p "$MACOS_KEYCHAIN" > /tmp/developer-id.cer
+
+        # security verify-cert \
+        #   -c /tmp/developer-id.cer \
+        #   -p codeSign
       env:
         RUN_POST_BUILD: ${{ inputs.post-build }}
         MACOS_KEYCHAIN: ${{ inputs.macos_keychain }}
         MACOS_KEYCHAIN_PASSWORD: ${{ inputs.macos_keychain_password }}
         P12_PASSWORD: ${{ inputs.macos_pkcs12_pswd }}
         MACOS_SIGN: ${{ inputs.macos_sign }}
-      run: |
-        ${{ inputs.script }}
     # - name: Upload Artifacts
     #   if: ${{ inputs.python-module == 'false' }}
     #   uses: actions/upload-artifact@v7
